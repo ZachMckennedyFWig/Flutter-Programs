@@ -27,6 +27,12 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.lightGreen,
+        sliderTheme: SliderThemeData.fromPrimaryColors(
+          primaryColor: Colors.lightGreen, 
+          primaryColorDark: const Color.fromRGBO(29, 185, 84, 1.0), 
+          primaryColorLight: Colors.lightGreenAccent, 
+          valueIndicatorTextStyle: const TextStyle(color: Colors.white),
+          ),
       ),
       home: MyHomePage(),
     );

@@ -53,6 +53,18 @@ class _DesktopLanding extends State<DesktopLanding> {
   int selected = 0;
   // Variable to tell the animated container if it should be using the animation or if the website is just being scaled
   bool switching = false;
+  // Variable to store the selected playlists name
+  String selectedPlaylist = "";
+
+  int bpm = 100;
+  int key = 80;
+  int dance = 35;
+  int acoustic = 25;
+  int energy = 65;
+  int liveness = 0;
+  int loudness = 20;
+  int speechiness = 15;
+  int valence = 30;
 
   // Increments the state by 1
   void incrementSelected(){
@@ -243,6 +255,9 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                           // Move to the next page
                                                           incrementSelected();
                                                           print('cringe ' + index.toString()); 
+                                                          setState(() {
+                                                            selectedPlaylist = 'Playlist ' + index.toString();
+                                                          });
                                                           // Playlist is clicked, return the playlist.
                                                         },
                                                         // Creates mouse region to change the pointer to select when over a grid
@@ -316,16 +331,338 @@ class _DesktopLanding extends State<DesktopLanding> {
                             ], 
                           ),
                          // Sets the key to the iteration value so the animator knows that this is a different container from the previous
-                         key: ValueKey<int>(1) 
+                         key: ValueKey<int>(selected) 
                         );
                   
         break;
       case 2: 
-        child = Text(
-                'Pick Parameters',
-                style: TextStyle(color: Colors.white, fontSize: 30),
+        child = Container(
+                  child: Column(
+                    // Alligns elements to be evenly spread out between the very top and bottom of the container
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Dynamic spacer to add padding to the top
+                      Spacer(flex: 2),
+                      // Wraps text in flexible to dynamically spize it
+                      Flexible(
+                        flex: 3,
+                        // Text that welcomes the user
+                        child: Text(
+                          selectedPlaylist,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black, 
+                            fontSize: 50,
+                            ),
+                        ),
+                      ),
+                      // Dynamic spacer to add padding between the welcome and instruction text
+                      Spacer(flex: 1),
+                      // Wraps text in flexible to dynamically size it
+                      Flexible(
+                        flex: 2,
+                        // Text to tell the user to pick a playlist
+                        child:Text(
+                          'Adjust Sorting Parameters',
+                          style: TextStyle(
+                            color: Colors.black, 
+                            fontSize: 15,
+                            ),
+                        ),
+                      ),
+                      // Dynamic spacer to add padding between the instructions and the grid
+                      Spacer(flex: 1),
+                      Flexible(
+                        // Fits it tightly 
+                        fit: FlexFit.tight,
+                        flex: 25,
+                        // Rectangular clip to give the grid rounded corners
+                        child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                                          // Matches the bottom corners to the Animated Container
+                                          topLeft: Radius.circular(5),
+                                          topRight: Radius.circular(5),
+                                          bottomLeft: Radius.circular(20),
+                                          bottomRight: Radius.circular(20),
+                                        ),
+                          // Container to hold the Grid Veiw in a different color box
+                          child: Container(
+                            // Sets container to gray box
+                            color: Color.fromRGBO(25, 20, 20, 1.0),
+                            child: Column(
+                                    children: [
+                                      Spacer(flex: 1),
+                                      Flexible(
+                                      flex: 5,
+                                      child: Row(
+                                        children: [
+                                         Spacer(flex: 1),
+                                         Flexible(
+                                           flex: 5,
+                                           child: Column(
+                                                    children: [
+                                                        Text(
+                                                          'bpm',
+                                                          style: TextStyle(
+                                                          color: Colors.white, 
+                                                          fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        Slider(
+                                                        value: bpm.toDouble(), 
+                                                        min: 0,
+                                                        max: 100,
+                                                        label: bpm.toString(),
+                                                        onChanged: (double value){
+                                                            setState(() {
+                                                              bpm = value.toInt();
+                                                            });
+                                                          },
+                                                        ),
+                                                    ]
+                                                  )
+                                            ),
+                                         Spacer(flex: 1),
+                                         Flexible(
+                                           flex: 5,
+                                           child: Column(
+                                                    children: [
+                                                        Text(
+                                                          'key',
+                                                          style: TextStyle(
+                                                          color: Colors.white, 
+                                                          fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        Slider(
+                                                        value: key.toDouble(), 
+                                                        min: 0,
+                                                        max: 100,
+                                                        label: key.toString(),
+                                                        onChanged: (double value){
+                                                            setState(() {
+                                                              key = value.toInt();
+                                                            });
+                                                          },
+                                                        ),
+                                                    ]
+                                                  )
+                                            ),
+                                         Spacer(flex: 1),
+                                         Flexible(
+                                           flex: 5,
+                                           child: Column(
+                                                    children: [
+                                                        Text(
+                                                          'energy',
+                                                          style: TextStyle(
+                                                          color: Colors.white, 
+                                                          fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        Slider(
+                                                        value: energy.toDouble(), 
+                                                        min: 0,
+                                                        max: 100,
+                                                        label: energy.toString(),
+                                                        onChanged: (double value){
+                                                            setState(() {
+                                                              energy = value.toInt();
+                                                            });
+                                                          },
+                                                        ),
+                                                    ]
+                                                  )
+                                            ),
+                                         Spacer(flex: 1),
+                                        ]
+                                      ),
+                                    ),
+                                    Spacer(flex: 1),
+                                    Flexible(
+                                      flex: 5,
+                                      child: Row(
+                                        children: [
+                                         Spacer(flex: 1),
+                                         Flexible(
+                                           flex: 5,
+                                           child: Column(
+                                                    children: [
+                                                        Text(
+                                                          'Acousticness',
+                                                          style: TextStyle(
+                                                          color: Colors.white, 
+                                                          fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        Slider(
+                                                        value: acoustic.toDouble(), 
+                                                        min: 0,
+                                                        max: 100,
+                                                        label: acoustic.toString(),
+                                                        onChanged: (double value){
+                                                            setState(() {
+                                                              acoustic = value.toInt();
+                                                            });
+                                                          },
+                                                        ),
+                                                    ]
+                                                  )
+                                            ),
+                                         Spacer(flex: 1),
+                                         Flexible(
+                                           flex: 5,
+                                           child: Column(
+                                                    children: [
+                                                        Text(
+                                                          'Danceability',
+                                                          style: TextStyle(
+                                                          color: Colors.white, 
+                                                          fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        Slider(
+                                                        value: dance.toDouble(), 
+                                                        min: 0,
+                                                        max: 100,
+                                                        label: dance.toString(),
+                                                        onChanged: (double value){
+                                                            setState(() {
+                                                              dance = value.toInt();
+                                                            });
+                                                          },
+                                                        ),
+                                                    ]
+                                                  )
+                                            ),
+                                         Spacer(flex: 1),
+                                         Flexible(
+                                           flex: 5,
+                                           child: Column(
+                                                    children: [
+                                                        Text(
+                                                          'Loudness',
+                                                          style: TextStyle(
+                                                          color: Colors.white, 
+                                                          fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        Slider(
+                                                        value: loudness.toDouble(), 
+                                                        min: 0,
+                                                        max: 100,
+                                                        label: loudness.toString(),
+                                                        onChanged: (double value){
+                                                            setState(() {
+                                                              loudness = value.toInt();
+                                                            });
+                                                          },
+                                                        ),
+                                                    ]
+                                                  )
+                                            ),
+                                         Spacer(flex: 1),
+                                        ]
+                                      ),
+                                    ),
+                                    Spacer(flex: 1),
+                                    Flexible(
+                                      flex: 5,
+                                      child: Row(
+                                        children: [
+                                         Spacer(flex: 1),
+                                         Flexible(
+                                           flex: 5,
+                                           child: Column(
+                                                    children: [
+                                                        Text(
+                                                          'Liveness',
+                                                          style: TextStyle(
+                                                          color: Colors.white, 
+                                                          fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        Slider(
+                                                        value: liveness.toDouble(), 
+                                                        min: 0,
+                                                        max: 100,
+                                                        label: liveness.toString(),
+                                                        onChanged: (double value){
+                                                            setState(() {
+                                                              liveness = value.toInt();
+                                                            });
+                                                          },
+                                                        ),
+                                                    ]
+                                                  )
+                                            ),
+                                         Spacer(flex: 1),
+                                         Flexible(
+                                           flex: 5,
+                                           child: Column(
+                                                    children: [
+                                                        Text(
+                                                          'Speechiness',
+                                                          style: TextStyle(
+                                                          color: Colors.white, 
+                                                          fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        Slider(
+                                                        value: speechiness.toDouble(), 
+                                                        min: 0,
+                                                        max: 100,
+                                                        label: speechiness.toString(),
+                                                        onChanged: (double value){
+                                                            setState(() {
+                                                              speechiness = value.toInt();
+                                                            });
+                                                          },
+                                                        ),
+                                                    ]
+                                                  )
+                                            ),
+                                         Spacer(flex: 1),
+                                         Flexible(
+                                           flex: 5,
+                                           child: Column(
+                                                    children: [
+                                                        Text(
+                                                          'Valence',
+                                                          style: TextStyle(
+                                                          color: Colors.white, 
+                                                          fontSize: 15,
+                                                          ),
+                                                        ),
+                                                        Slider(
+                                                        value: valence.toDouble(), 
+                                                        min: 0,
+                                                        max: 100,
+                                                        label: valence.toString(),
+                                                        onChanged: (double value){
+                                                            setState(() {
+                                                              valence = value.toInt();
+                                                            });
+                                                          },
+                                                        ),
+                                                    ]
+                                                  )
+                                            ),
+                                         Spacer(flex: 1),
+                                        ]
+                                      ),
+                                    ),
+                                    Spacer(flex: 1),
+                                  ]
+                                ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                // Sets the key to the iteration value so the animator knows that this is a different container from the previous
                 key: ValueKey<int>(selected) 
-                );
+        );
         break;
       case 3: 
         child = Text(
