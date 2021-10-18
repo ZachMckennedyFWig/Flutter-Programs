@@ -3,6 +3,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert' as convert;
 
 int globalSelected = 0;
 
@@ -17,6 +19,9 @@ var pictureList = ['assets/images/test-thumbnail.jpg',
                   'assets/images/test-thumbnail.jpg',
                   'assets/images/test-thumbnail.jpg',
                   ];
+
+
+
 
 
 class landing extends StatelessWidget {
@@ -44,6 +49,10 @@ class DesktopLanding extends StatefulWidget {
   State<DesktopLanding> createState() => _DesktopLanding();
 }
 
+
+
+
+
 /// This is the private State class that goes with MyStatefulWidget.
 class _DesktopLanding extends State<DesktopLanding> {
   // This class manages the state of the landing page and what it is current displaying
@@ -51,6 +60,24 @@ class _DesktopLanding extends State<DesktopLanding> {
 
   // Variable that stores the state of the landing page
   int selected = 0;
+
+  Future<void> initialRequest() async {
+    var url = Uri.parse('http://127.0.0.1:5000/');
+
+    // Await the http get response, then decode the json-formatted response.
+    var response = await http.get(url);
+    if (response.statusCode == 200) {
+      var jsonResponse = convert.jsonDecode(response.body);
+      bool returning = jsonResponse['returning_user'];
+      if(returning) {selected = 1;}
+      else {selected = 0;}
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
+  }
+
+
+  
   // Variable to tell the animated container if it should be using the animation or if the website is just being scaled
   bool switching = false;
   // Variable to store the selected playlists name
@@ -65,6 +92,10 @@ class _DesktopLanding extends State<DesktopLanding> {
   int loudness = 20;
   int speechiness = 15;
   int valence = 30;
+
+  
+
+
 
   // Increments the state by 1
   void incrementSelected(){
@@ -653,6 +684,39 @@ class _DesktopLanding extends State<DesktopLanding> {
                                       ),
                                     ),
                                     Spacer(flex: 1),
+                                    Tooltip(
+                                      // Tooltip message
+                                      message:'Sort Playlist Using These Parameters',
+                                      // Time before tooltip is displayed
+                                      waitDuration: Duration(seconds: 1),
+                                      child: ClipRRect(
+                                        borderRadius: BorderRadius.circular(35),
+                                        // Tooltip wrapped over Text button
+                                        child: TextButton(
+                                                  // Sets the text to the main font and gives padding + color
+                                                  style: TextButton.styleFrom(
+                                                    backgroundColor: Color.fromRGBO(29, 185, 84, 1.0),
+                                                    padding: const EdgeInsets.all(35.0),
+                                                    primary: Colors.black,
+                                                  ),
+                                                  // Sets the icon Label to log in text
+                                                  child: Text(
+                                                            'Sort Playlist',
+                                                            style: TextStyle(
+                                                              fontWeight: FontWeight.bold,
+                                                              color: Colors.black, 
+                                                              fontSize: 30,
+                                                              ), 
+                                                          ),
+                                                  // When pressed, increment the selection
+                                                  onPressed: () {
+                                                    incrementSelected();
+                                                    // This is also where Oauth2 will go
+                                                  },
+                                                ),
+                                        ),
+                                    ),
+                                    Spacer(flex: 1),
                                   ]
                                 ),
                           ),
@@ -737,6 +801,7 @@ double heightSelector(double maxHeight)
   // Handeling the animated switches on the landing page
   @override
   Widget build(BuildContext context) {
+    initialRequest();
     // Container to get the parents size
     return Container(
         // use LayoutBuilder to fetch the parent widget's constraints
