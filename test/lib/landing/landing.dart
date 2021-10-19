@@ -1,10 +1,15 @@
 // ignore_for_file: file_names, prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
+import 'dart:async';
+import 'package:flutter_web_auth/flutter_web_auth.dart';
+
 
 int globalSelected = 0;
 
@@ -53,6 +58,7 @@ class DesktopLanding extends StatefulWidget {
 
 
 
+
 /// This is the private State class that goes with MyStatefulWidget.
 class _DesktopLanding extends State<DesktopLanding> {
   // This class manages the state of the landing page and what it is current displaying
@@ -60,28 +66,10 @@ class _DesktopLanding extends State<DesktopLanding> {
 
   // Variable that stores the state of the landing page
   int selected = 0;
-
-  Future<void> initialRequest() async {
-    var url = Uri.parse('http://127.0.0.1:5000/');
-
-    // Await the http get response, then decode the json-formatted response.
-    var response = await http.get(url);
-    if (response.statusCode == 200) {
-      var jsonResponse = convert.jsonDecode(response.body);
-      bool returning = jsonResponse['returning_user'];
-      if(returning) {selected = 1;}
-      else {selected = 0;}
-    } else {
-      print('Request failed with status: ${response.statusCode}.');
-    }
-  }
-
-
-  
   // Variable to tell the animated container if it should be using the animation or if the website is just being scaled
   bool switching = false;
   // Variable to store the selected playlists name
-  String selectedPlaylist = "";
+  dynamic selectedPlaylist = "";
 
   int bpm = 100;
   int key = 80;
@@ -93,7 +81,107 @@ class _DesktopLanding extends State<DesktopLanding> {
   int speechiness = 15;
   int valence = 30;
 
+  dynamic userName = "";
+  var playlistNames = [];
+  var playlistId = [];
+  var playlistPicture = [];
+
+  bool first_start = true;
+
+
+
+  Future<String> getList(String url) async 
+  {
+  var response = await http.get(Uri.parse(url), headers: {
+    HttpHeaders.contentTypeHeader: 'application/json', 
+    //HttpHeaders.authorizationHeader: '<auth string>',
+    });
+    var cookie = response.headers['cookie'];
+    print(cookie);
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Error();
+    }
+  }
+
+  void grabUserInfo(var jsonResponse)
+  {
+    // Function to grab the given users information from the json response
+    // jsonResponse -> decoded json of the users basic info
+
+    // sets the state of the class variables to appropriate values
+    setState(() {
+      userName = jsonResponse['name'];
+      for(int i = 0; i < jsonResponse['playlists'].len(); i++){
+        playlistNames[i] = jsonResponse['playlists'][i]['name'];
+        playlistId[i] = jsonResponse['playlists'][i]['id'];
+        playlistPicture[i] = jsonResponse['playlists'][i]['image_link'];
+      }
+    });
+    incrementSelected();
+  }
+
   
+  void webInitialization() async
+  {
+    // Function that kicks off the users experience, if the user has visited before it will
+    //  remember them and automatically move to the playlist select page but if not, they 
+    //  will be taken to the beginning and prompted to log in. 
+    print('cringe');
+    // Default link to API
+    String response = await getList('http://127.0.0.1:5000/');
+    
+    print('cringe');
+    print(response);
+    // Decode json into a string
+    var jsonResponse = convert.jsonDecode(response);
+
+    // Checks if user has visited before
+    bool returningUser = jsonResponse['returning_user'];
+
+    // if user has visited and logged in
+    if(returningUser){
+      // User info automatically grabbed
+      grabUserInfo(jsonResponse);
+    }
+    // else, goes to the default beginning of the program
+    else{
+      setState(() {
+        selected = 0;
+      });
+    }
+  }
+
+  final callbackUrl = "https://spotifydata.com/callback";
+
+  void _authenticateSpotfy() async {
+    final url = Uri.https('accounts.spotify.com', '/authorize', {
+    'response_type': 'code',
+    'client_id': '7c9a373b495447e3a9992322ee41ec94',
+    'redirect_uri': 'http://127.0.0.1:5000/oauth',
+    'scope': 'playlist-read-private+playlist-modify-public',
+    });
+
+    final result = await FlutterWebAuth.authenticate(
+        url: url.toString(), callbackUrlScheme: callbackUrl);
+
+    print(result);
+  }
+
+
+  void logIn() async
+  {
+    _authenticateSpotfy();
+    //String response = await getList('https://accounts.spotify.com/authorize?client_id=7c9a373b495447e3a9992322ee41ec94&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Foauth&scope=playlist-read-private+playlist-modify-public');
+
+
+    //print(response);
+
+    //var jsonResponse = convert.jsonDecode(response);
+
+    //grabUserInfo(jsonResponse);
+  }
 
 
 
@@ -185,7 +273,8 @@ class _DesktopLanding extends State<DesktopLanding> {
                                               ),
                                       // When pressed, increment the selection
                                       onPressed: () {
-                                        incrementSelected();
+                                        //incrementSelected();
+                                        logIn();
                                         // This is also where Oauth2 will go
                                       },
                                     ),
@@ -210,7 +299,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                 flex: 3,
                                 // Text that welcomes the user
                                 child: Text(
-                                  'Welcome, Zach',
+                                  'Welcome, ' + userName,
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.black, 
@@ -274,7 +363,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                       childAspectRatio: gridBoxAspect,
                                                     ),
                                                     // Number of playlists (based on number of playlist images)
-                                                    itemCount: pictureList.length,
+                                                    itemCount: playlistNames.length,
                                                     // Gridview builder
                                                     itemBuilder: (BuildContext context, int index) {
                                                       // Returns gesture detector to allow user to click each box
@@ -285,9 +374,10 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                         onTap: () {
                                                           // Move to the next page
                                                           incrementSelected();
-                                                          print('cringe ' + index.toString()); 
+                                                          //print('cringe ' + index.toString()); 
                                                           setState(() {
-                                                            selectedPlaylist = 'Playlist ' + index.toString();
+                                                            selectedPlaylist = playlistNames[index];
+                                                            // ALSO ADD PLAYLIST ID SUTFF HERE TO QUERY LATER THIS IS WHERE WE MOVE ON
                                                           });
                                                           // Playlist is clicked, return the playlist.
                                                         },
@@ -317,8 +407,8 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                                       // Corner clip settings
                                                                       borderRadius: BorderRadius.circular(5),
                                                                       // Image
-                                                                      child: Image.asset(
-                                                                        pictureList[index],
+                                                                      child: Image.network(
+                                                                        playlistPicture[index],
                                                                         // Sets scale so it takes up a good amount of space
                                                                         scale: 0.68,
                                                                       ),
@@ -336,7 +426,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                                           fit: BoxFit.fitWidth,
                                                                           // Playlist title text
                                                                           child:  Text(
-                                                                            'Playlist ' + index.toString(),
+                                                                            playlistNames[index],
                                                                             style: TextStyle(
                                                                               color: Colors.white, 
                                                                               ),
@@ -798,10 +888,16 @@ double heightSelector(double maxHeight)
   return height;
 }
 
+
   // Handeling the animated switches on the landing page
   @override
   Widget build(BuildContext context) {
-    initialRequest();
+    if(first_start){
+      webInitialization();
+      setState(() {
+        first_start = false;
+      });
+    }
     // Container to get the parents size
     return Container(
         // use LayoutBuilder to fetch the parent widget's constraints
