@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert' as convert;
 import 'dart:async';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'dart:html';
 
 
 int globalSelected = 0;
@@ -153,20 +154,51 @@ class _DesktopLanding extends State<DesktopLanding> {
     }
   }
 
-  final callbackUrl = "https://spotifydata.com/callback";
+  final callbackUrl = "http://127.0.0.1:5000/oauth";
 
   void _authenticateSpotfy() async {
     final url = Uri.https('accounts.spotify.com', '/authorize', {
     'response_type': 'code',
     'client_id': '7c9a373b495447e3a9992322ee41ec94',
-    'redirect_uri': 'http://127.0.0.1:5000/oauth',
+    'redirect_uri': 'http%3A%2F%2F127%2E0%2E0%2E1%3A5000%2Foauth:/',
     'scope': 'playlist-read-private+playlist-modify-public',
     });
 
-    final result = await FlutterWebAuth.authenticate(
-        url: url.toString(), callbackUrlScheme: callbackUrl);
+    //final result = await getList('https://accounts.spotify.com/authorize?client_id=7c9a373b495447e3a9992322ee41ec94&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Foauth&scope=playlist-read-private+playlist-modify-public');
+    //final result = await FlutterWebAuth.authenticate(
+       // url: url.toString(), callbackUrlScheme: callbackUrl);
 
-    print(result);
+    //final result = await FlutterWebAuth.authenticate(
+      //url: "https://accounts.spotify.com/authorize?client_id=7c9a373b495447e3a9992322ee41ec94&redirect_uri=http://localhost:5000/oauth&scope=playlist-read-private+playlist-modify-public",
+      //callbackUrlScheme: "http://127.0.0.1:5000/oauth?code=",
+    //);
+
+    WindowBase _popupWin;
+
+    final authUrl = 'https://accounts.spotify.com/authorize?client_id=7c9a373b495447e3a9992322ee41ec94&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Foauth&scope=playlist-read-private+playlist-modify-public';
+
+    //final Storage localStorage = window.localStorage;
+
+
+    _popupWin = window.open(
+        authUrl, "Spotify Auth", 'width=800, height=800, scrollbars=yes' 
+      );
+
+    
+
+    //print(_popupWin.toString());
+    //_popupWin.
+    //await (window.localStorage.containsValue('body') == true);
+    //sleep(Duration.);
+    //while(window.localStorage.containsValue('body') == false) {}
+    
+
+    //html.window.onMessage.listen((event) {
+    /// If the event contains the token it means the user is authenticated.
+    //print(convert.jsonDecode(response.toString()));
+//});
+
+    //print(result);
   }
 
 
