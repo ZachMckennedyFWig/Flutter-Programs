@@ -408,6 +408,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                       // Playlist title text
                                                       child: Text(
                                                         playlistNames[index],
+                                                        overflow: TextOverflow.ellipsis,
                                                         style: TextStyle(
                                                           color: Colors.white,
                                                         ),
@@ -448,31 +449,31 @@ class _DesktopLanding extends State<DesktopLanding> {
                     // Text that welcomes the user
                     child: 
                     FittedBox(
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fitWidth,
                       child: Text(
                         'Welcome, ' + userName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                          //fontSize: 50,
+                          fontSize: 50,
                         ),
                       ),
                     )
                   ),
                   // Dynamic spacer to add padding between the welcome and instruction text
-                  Spacer(flex: 1),
+                  Spacer(flex: 5),
                   // Wraps text in flexible to dynamically size it
                   Flexible(
                     flex: 2,
                     // Text to tell the user to pick a playlist
                     child: 
                     FittedBox(
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fitWidth,
                       child: Text(
-                        'Please Create a Playlist',
+                        'Please Create a Playlist in Spotify and then Come Back',
                         style: TextStyle(
                           color: Colors.black,
-                          //fontSize: 15,
+                          fontSize: 25,
                         ),
                       ),
                     )
@@ -498,12 +499,16 @@ class _DesktopLanding extends State<DesktopLanding> {
                 Flexible(
                   flex: 3,
                   // Text that welcomes the user
-                  child: Text(
-                    selectedPlaylist,
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 50,
+                  child: 
+                  FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Text(
+                      selectedPlaylist,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 50,
+                      ),
                     ),
                   ),
                 ),
@@ -513,11 +518,15 @@ class _DesktopLanding extends State<DesktopLanding> {
                 Flexible(
                   flex: 2,
                   // Text to tell the user to pick a playlist
-                  child: Text(
-                    'Adjust Sorting Parameters',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 15,
+                  child: 
+                  FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Text(
+                      'Adjust Sorting Parameters',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 15,
+                      ),
                     ),
                   ),
                 ),
@@ -549,145 +558,87 @@ class _DesktopLanding extends State<DesktopLanding> {
                             Flexible(
                                 flex: 5,
                                 child: Column(children: [
-                                  Text(
-                                    'bpm',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(
+                                      'Bpm',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
-                                  Slider(
-                                    value: bpm.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    label: bpm.toString(),
-                                    onChanged: (double value) {
-                                      setState(() {
-                                        bpm = value.toInt();
-                                      });
-                                    },
+                                  Flexible(
+                                    flex: 5,
+                                    child: Slider(
+                                      value: bpm.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      label: bpm.toString(),
+                                      onChanged: (double value) {
+                                        setState(() {
+                                          bpm = value.toInt();
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ])),
                             Spacer(flex: 1),
                             Flexible(
                                 flex: 5,
                                 child: Column(children: [
-                                  Text(
-                                    'key',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(
+                                      'Key',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
-                                  Slider(
-                                    value: key.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    label: key.toString(),
-                                    onChanged: (double value) {
-                                      setState(() {
-                                        key = value.toInt();
-                                      });
-                                    },
+                                  Flexible(
+                                    flex: 5,
+                                    child: Slider(
+                                      value: key.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      label: key.toString(),
+                                      onChanged: (double value) {
+                                        setState(() {
+                                          key = value.toInt();
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ])),
                             Spacer(flex: 1),
                             Flexible(
                                 flex: 5,
                                 child: Column(children: [
-                                  Text(
-                                    'energy',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(
+                                      'Energy',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
-                                  Slider(
-                                    value: energy.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    label: energy.toString(),
-                                    onChanged: (double value) {
-                                      setState(() {
-                                        energy = value.toInt();
-                                      });
-                                    },
-                                  ),
-                                ])),
-                            Spacer(flex: 1),
-                          ]),
-                        ),
-                        Spacer(flex: 1),
-                        Flexible(
-                          flex: 5,
-                          child: Row(children: [
-                            Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  Text(
-                                    'Acousticness',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                                  Flexible(
+                                    flex: 5,
+                                    child: Slider(
+                                      value: energy.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      label: energy.toString(),
+                                      onChanged: (double value) {
+                                        setState(() {
+                                          energy = value.toInt();
+                                        });
+                                      },
                                     ),
-                                  ),
-                                  Slider(
-                                    value: acoustic.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    label: acoustic.toString(),
-                                    onChanged: (double value) {
-                                      setState(() {
-                                        acoustic = value.toInt();
-                                      });
-                                    },
-                                  ),
-                                ])),
-                            Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  Text(
-                                    'Danceability',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                  Slider(
-                                    value: dance.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    label: dance.toString(),
-                                    onChanged: (double value) {
-                                      setState(() {
-                                        dance = value.toInt();
-                                      });
-                                    },
-                                  ),
-                                ])),
-                            Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  Text(
-                                    'Loudness',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
-                                    ),
-                                  ),
-                                  Slider(
-                                    value: loudness.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    label: loudness.toString(),
-                                    onChanged: (double value) {
-                                      setState(() {
-                                        loudness = value.toInt();
-                                      });
-                                    },
                                   ),
                                 ])),
                             Spacer(flex: 1),
@@ -701,69 +652,181 @@ class _DesktopLanding extends State<DesktopLanding> {
                             Flexible(
                                 flex: 5,
                                 child: Column(children: [
-                                  Text(
-                                    'Liveness',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(
+                                      'Acousticness',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
-                                  Slider(
-                                    value: liveness.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    label: liveness.toString(),
-                                    onChanged: (double value) {
-                                      setState(() {
-                                        liveness = value.toInt();
-                                      });
-                                    },
+                                  Flexible(
+                                    flex: 5,
+                                    child: Slider(
+                                      value: acoustic.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      label: acoustic.toString(),
+                                      onChanged: (double value) {
+                                        setState(() {
+                                          acoustic = value.toInt();
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ])),
                             Spacer(flex: 1),
                             Flexible(
                                 flex: 5,
                                 child: Column(children: [
-                                  Text(
-                                    'Speechiness',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(
+                                      'Danceabilty',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
-                                  Slider(
-                                    value: speechiness.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    label: speechiness.toString(),
-                                    onChanged: (double value) {
-                                      setState(() {
-                                        speechiness = value.toInt();
-                                      });
-                                    },
+                                  Flexible(
+                                    flex: 5,
+                                    child: Slider(
+                                      value: dance.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      label: dance.toString(),
+                                      onChanged: (double value) {
+                                        setState(() {
+                                          dance = value.toInt();
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ])),
                             Spacer(flex: 1),
                             Flexible(
                                 flex: 5,
                                 child: Column(children: [
-                                  Text(
-                                    'Valence',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 15,
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(
+                                      'Loudness',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
                                     ),
                                   ),
-                                  Slider(
-                                    value: valence.toDouble(),
-                                    min: 0,
-                                    max: 100,
-                                    label: valence.toString(),
-                                    onChanged: (double value) {
-                                      setState(() {
-                                        valence = value.toInt();
-                                      });
-                                    },
+                                  Flexible(
+                                    flex: 5, 
+                                    child: Slider(
+                                      value: loudness.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      label: loudness.toString(),
+                                      onChanged: (double value) {
+                                        setState(() {
+                                          loudness = value.toInt();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ])),
+                            Spacer(flex: 1),
+                          ]),
+                        ),
+                        Spacer(flex: 1),
+                        Flexible(
+                          flex: 5,
+                          child: Row(children: [
+                            Spacer(flex: 1),
+                            Flexible(
+                                flex: 5,
+                                child: Column(children: [
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(
+                                      'Liveness',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 5,
+                                    child: Slider(
+                                      value: liveness.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      label: liveness.toString(),
+                                      onChanged: (double value) {
+                                        setState(() {
+                                          liveness = value.toInt();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ])),
+                            Spacer(flex: 1),
+                            Flexible(
+                                flex: 5,
+                                child: Column(children: [
+                                  FittedBox(
+                                    fit: BoxFit.fitWidth,
+                                    child: Text(
+                                      'Speechiness',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 5,
+                                    child: Slider(
+                                      value: speechiness.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      label: speechiness.toString(),
+                                      onChanged: (double value) {
+                                        setState(() {
+                                          speechiness = value.toInt();
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ])),
+                            Spacer(flex: 1),
+                            Flexible(
+                                flex: 5,
+                                child: Column(children: [ 
+                                  FittedBox(
+                                    fit: BoxFit.fitHeight,
+                                    child: Text(
+                                      'Valence',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 5,
+                                    child: Slider(
+                                      value: valence.toDouble(),
+                                      min: 0,
+                                      max: 100,
+                                      label: valence.toString(),
+                                      onChanged: (double value) {
+                                        setState(() {
+                                          valence = value.toInt();
+                                        });
+                                      },
+                                    ),
                                   ),
                                 ])),
                             Spacer(flex: 1),
