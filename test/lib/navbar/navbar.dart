@@ -1,4 +1,4 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter/material.dart';
 
@@ -27,32 +27,50 @@ class DesktopNavbar extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children:[
-          const SizedBox(
-            height: 30,
-          ),
-          const Text(
-            "Sortify", 
-            style: TextStyle(
-              fontWeight: FontWeight.bold, color: Colors.white, fontSize: 100, letterSpacing: 0),
-          ),
-          const SizedBox(
-            height: 20
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Text(
-                "Home", 
-                style: TextStyle(color: Colors.white),
+          Spacer(flex: 1),
+          Flexible(
+            flex: 15,
+            child:
+            FittedBox(
+              fit: BoxFit.fitWidth,
+              child: Text(
+                "Sortify", 
+                style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Colors.white, fontSize: 100, letterSpacing: 0),
               ),
-              SizedBox(
-                width: 30,
-              ),
-              Text(
-                "About", 
-                style: TextStyle(color: Colors.white),
-              ),
-            ],
+            ),
+          ),
+          Spacer(flex: 1),
+          Flexible(
+            flex: 3,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Flexible(
+                  flex: 20,
+                  child: 
+                  FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Text(
+                      "Home", 
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                Spacer(flex: 1),
+                Flexible(
+                  flex: 20,
+                  child: 
+                  FittedBox(
+                    fit: BoxFit.fitWidth,
+                    child: Text(
+                      "About", 
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

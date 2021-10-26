@@ -195,11 +195,11 @@ class _DesktopLanding extends State<DesktopLanding> {
     // Variables for layout items:
 
     // Amount of Playlists to be shown per row, Dynamic based on the width of the container it is wrapped in
-    int axisCount = (widthSelector(maxWidth) * 0.8) ~/ 125;
+    int axisCount = (widthSelector(maxWidth) * 0.8) ~/ 150;
     // Amount of Horizontal space between each of the playlist boxes
-    double crossSpace = 10;
+    double crossSpace = 15;
     // Amount of Vertical space between each of the playlist boxes
-    double vertSpace = 10;
+    double vertSpace = 15;
     // Aspect ratio of the playlist boxes (width/height), this makes them slighty taller rectangles
     double gridBoxAspect = 0.85;
 
@@ -269,13 +269,13 @@ class _DesktopLanding extends State<DesktopLanding> {
                     // Text that welcomes the user
                     child: 
                     FittedBox(
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fitWidth,
                       child: Text(
                         'Welcome, ' + userName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
-                          //fontSize: 50,
+                          fontSize: 50,
                         ),
                       ),
                     ),
@@ -288,12 +288,12 @@ class _DesktopLanding extends State<DesktopLanding> {
                     // Text to tell the user to pick a playlist
                     child: 
                     FittedBox(
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fitWidth,
                       child: Text(
                         'Select One Of Your Playlists',
                         style: TextStyle(
                           color: Colors.black,
-                          //fontSize: 15,
+                          fontSize: 15,
                         ),
                       ),
                     ),
@@ -304,7 +304,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                   Flexible(
                       // Fits it tightly
                       fit: FlexFit.tight,
-                      flex: 25,
+                      flex: 40,
                       // Rectangular clip to give the grid rounded corners
                       child: ClipRRect(
                         borderRadius: BorderRadius.only(
@@ -397,7 +397,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                     ),
                                                   ),
                                                   // Spacer to dynamically space the image and the playlist title
-                                                  Spacer(flex: 1),
+                                                  Spacer(flex: 2),
                                                   // Row to hold the title text with good spacing
                                                   Row(children: <Widget>[
                                                     // 10 pixel sized box
@@ -415,7 +415,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                     ),
                                                   ]),
                                                   // Spacer to add slight padding to the bottom
-                                                  Spacer(flex: 1),
+                                                  Spacer(flex: 2),
                                                 ],
                                               )),
                                         ),
@@ -864,7 +864,7 @@ class _DesktopLanding extends State<DesktopLanding> {
         height = 90;
         break;
       case 1: // Select Playlist
-        height = (maxHeight - 233) * 0.7;
+        height = maxHeight*0.95;
         break;
       case 2: // Selecting Parameters
         height = (maxHeight - 233) *
