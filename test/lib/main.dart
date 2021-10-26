@@ -28,11 +28,11 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         primarySwatch: Colors.lightGreen,
         sliderTheme: SliderThemeData.fromPrimaryColors(
-          primaryColor: Colors.lightGreen, 
-          primaryColorDark: const Color.fromRGBO(29, 185, 84, 1.0), 
-          primaryColorLight: Colors.lightGreenAccent, 
+          primaryColor: Colors.lightGreen,
+          primaryColorDark: const Color.fromRGBO(29, 185, 84, 1.0),
+          primaryColorLight: Colors.lightGreenAccent,
           valueIndicatorTextStyle: const TextStyle(color: Colors.white),
-          ),
+        ),
       ),
       home: MyHomePage(),
     );
@@ -40,8 +40,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatelessWidget {
-
-  @override 
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
@@ -54,27 +53,23 @@ class MyHomePage extends StatelessWidget {
           ),
         ),
         child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-              child: Container(
-                alignment: Alignment.topCenter,
-                color: const Color.fromRGBO(25, 20, 20, 0.3),
-                child: Column(
-                  children: <Widget>[
-                    Flexible(
-                      flex: 5,
-                      child: navbar(),
-                    ),
-                    const Spacer(flex: 1),
-                    Flexible(
-                      flex: 25,
-                      child: landing()
-                    ),
-                  ],
-
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            alignment: Alignment.topCenter,
+            color: const Color.fromRGBO(25, 20, 20, 0.3),
+            child: Column(
+              children: <Widget>[
+                Flexible(
+                  flex: 5,
+                  child: navbar(),
                 ),
-              ),
+                const Spacer(flex: 1),
+                Flexible(flex: 25, child: landing()),
+              ],
             ),
+          ),
         ),
+      ),
     );
   }
 }
