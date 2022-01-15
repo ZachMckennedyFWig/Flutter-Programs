@@ -56,7 +56,7 @@ class MyHomePage extends StatelessWidget {
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
             alignment: Alignment.topCenter,
-            color: const Color.fromRGBO(25, 20, 20, 0.3),
+            color: const Color.fromRGBO(15, 10, 10, 0.90),
             child: Column(
               children: <Widget>[
                 Flexible(

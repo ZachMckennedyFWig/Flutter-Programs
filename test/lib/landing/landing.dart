@@ -11,6 +11,7 @@ import 'dart:js' as js;
 import 'dart:convert' as convert;
 import 'dart:async';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'dart:math';
 
 int globalSelected = 0;
 
@@ -61,16 +62,22 @@ class _DesktopLanding extends State<DesktopLanding> {
   bool switching = false;
   // Variable to store the selected playlists name
   dynamic selectedPlaylist = "";
+  dynamic selectedPlaylistId = "";
+  dynamic selectedPlaylistPic = "";
 
-  int bpm = 100;
-  int key = 80;
-  int dance = 35;
-  int acoustic = 25;
-  int energy = 65;
-  int liveness = 0;
-  int loudness = 20;
-  int speechiness = 15;
-  int valence = 30;
+  // List of all the elements in order:
+  /*
+    0) bpm
+    1) key 
+    2) dance
+    3) acoustic
+    4) energy
+    5) liveness 
+    6) loudness
+    7) speechiness
+    8) valence
+  */
+  List<int> elements = [100, 80, 35, 25, 65, 0, 20, 15, 30];
 
   dynamic userName = "";
 
@@ -128,7 +135,7 @@ class _DesktopLanding extends State<DesktopLanding> {
 
     // Default link to API
     String response = await getList('http://127.0.0.1:5000/');
-    print(response);
+    //print(response);
 
     // Decode json into a string
     var jsonResponse = convert.jsonDecode(response);
@@ -184,6 +191,49 @@ class _DesktopLanding extends State<DesktopLanding> {
       switching = true;
     });
   }
+
+
+  // Function to generate sliders
+  Widget genSlider(String imagePath, String title, String message, int index)
+  {
+    // Builds a Slider based on the style and index of variable array assigned
+    /*
+      title -> String of the label above the slider
+      index -> Index of array that the data will be stored in 
+    */
+  return Flexible(
+          flex: 5,
+          child: Tooltip(
+            message: message,
+            waitDuration: Duration(milliseconds: 250),
+            child: Column(children: [
+              Text(
+                title,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                ),
+              ),
+              Flexible(
+                flex: 5,
+                child: Slider(
+                  value: elements[index].toDouble(),
+                  min: 0,
+                  max: 100,
+                  label: elements[index].toString(),
+                  onChanged: (double value) {
+                    setState(() {
+                      elements[index] = value.toInt();
+                    });
+                  },
+                ),
+              ),
+            ]),
+          ),
+        );
+  }
+
+
 
   Widget giveChild(double maxWidth, double maxHeight) {
     // Function to return the correct child for the container based on the state of the program
@@ -256,6 +306,7 @@ class _DesktopLanding extends State<DesktopLanding> {
         {
           // Wrapped in container to get parents size
           child = Container(
+            margin: EdgeInsets.only(left: 15, right: 15),
               // Column of the elements: Welcome message -> instructions -> Grid View scrollable playlist thing
               child: Column(
                 // Alligns elements to be evenly spread out between the very top and bottom of the container
@@ -274,7 +325,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                         'Welcome, ' + userName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Colors.white,
                           fontSize: 50,
                         ),
                       ),
@@ -292,7 +343,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                       child: Text(
                         'Select One Of Your Playlists',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Colors.white,
                           fontSize: 15,
                         ),
                       ),
@@ -356,6 +407,8 @@ class _DesktopLanding extends State<DesktopLanding> {
                                         //print('cringe ' + index.toString());
                                         setState(() {
                                           selectedPlaylist = playlistNames[index];
+                                          selectedPlaylistId = playlistId[index];
+                                          selectedPlaylistPic = playlistPicture[index];
                                           // ALSO ADD PLAYLIST ID SUTFF HERE TO QUERY LATER THIS IS WHERE WE MOVE ON
                                         });
                                         // Playlist is clicked, return the playlist.
@@ -367,58 +420,71 @@ class _DesktopLanding extends State<DesktopLanding> {
                                         // Clip to round corners
                                         child: ClipRRect(
                                           // Corner clip settings
-                                          borderRadius: BorderRadius.circular(5),
+                                          borderRadius: BorderRadius.only(
+                                            topLeft: Radius.circular(15), 
+                                            topRight: Radius.circular(15),
+                                            bottomLeft: Radius.circular(5),
+                                            bottomRight: Radius.circular(5),
+                                            ),
                                           // Container to hold the grid
                                           child: Container(
                                               // Slightly lighter gray so it pops out
                                               color:
-                                                  Color.fromRGBO(35, 30, 30, 1.0),
+                                                  //Color.fromRGBO(42, 37, 37, 1.0),
+                                                  Colors.primaries[Random().nextInt(Colors.primaries.length)],
                                               // Column of elements inside each grid
                                               //  Playlist image -> Playlist title
-                                              child: Column(
-                                                children: <Widget>[
-                                                  // Top padding, dynamically spaced
-                                                  Spacer(flex: 1),
-                                                  // Image wrapped in flexible to scale with the page
-                                                  Flexible(
-                                                    flex: 20,
-                                                    // Clip to round the corners of the image
-                                                    child: ClipRRect(
-                                                      // Corner clip settings
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              5),
-                                                      // Image
-                                                      child: Image.network(
-                                                        playlistPicture[index],
-                                                        // Sets scale so it takes up a good amount of space
-                                                        scale: 0.68,
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  // Spacer to dynamically space the image and the playlist title
-                                                  Spacer(flex: 2),
-                                                  // Row to hold the title text with good spacing
-                                                  Row(children: <Widget>[
-                                                    // 10 pixel sized box
-                                                    SizedBox(width: 10),
-                                                    // Scales the text in the remaining space
-                                                    FittedBox(
-                                                      fit: BoxFit.fitWidth,
-                                                      // Playlist title text
-                                                      child: Text(
-                                                        playlistNames[index],
-                                                        overflow: TextOverflow.ellipsis,
-                                                        style: TextStyle(
-                                                          color: Colors.white,
+                                              child: Container(
+                                                color: Color.fromRGBO(0, 0, 0, .5),
+                                                child: Column(
+                                                  children: <Widget>[
+                                                    // Top padding, dynamically spaced
+                                                    Spacer(flex: 1),
+                                                    // Image wrapped in flexible to scale with the page
+                                                    Flexible(
+                                                      flex: 30,
+                                                      // Clip to round the corners of the image
+                                                      child: ClipRRect(
+                                                        // Corner clip settings
+                                                        borderRadius:
+                                                            BorderRadius.only(
+                                                              topLeft: Radius.circular(9),
+                                                              topRight: Radius.circular(9),
+                                                              ),
+                                                        // Image
+                                                        child: Image.network(
+                                                          playlistPicture[index],
+                                                          // Sets scale so it takes up a good amount of space
+                                                          scale: 0.68,
                                                         ),
                                                       ),
                                                     ),
-                                                  ]),
-                                                  // Spacer to add slight padding to the bottom
-                                                  Spacer(flex: 2),
-                                                ],
-                                              )),
+                                                    // Spacer to dynamically space the image and the playlist title
+                                                    Spacer(flex: 2),
+                                                    // Row to hold the title text with good spacing
+                                                    Row(children: <Widget>[
+                                                      // 10 pixel sized box
+                                                      SizedBox(width: 10),
+                                                      // Scales the text in the remaining space
+                                                      FittedBox(
+                                                        fit: BoxFit.fitWidth,
+                                                        // Playlist title text
+                                                        child: Text(
+                                                          playlistNames[index],
+                                                          overflow: TextOverflow.ellipsis,
+                                                          style: TextStyle(
+                                                            color: Colors.white,
+                                                            
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ]),
+                                                    // Spacer to add slight padding to the bottom
+                                                    Spacer(flex: 2),
+                                                  ],
+                                                )
+                                              ),
+                                            ),
                                         ),
                                       ),
                                     );
@@ -454,7 +520,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                         'Welcome, ' + userName,
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: Colors.white,
                           fontSize: 50,
                         ),
                       ),
@@ -470,9 +536,9 @@ class _DesktopLanding extends State<DesktopLanding> {
                     FittedBox(
                       fit: BoxFit.fitWidth,
                       child: Text(
-                        'Please Create a Playlist in Spotify and then Come Back',
+                        'Please Create a Playlist with at least 5 songs in Spotify and then Come Back',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Colors.white,
                           fontSize: 25,
                         ),
                       ),
@@ -506,7 +572,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                       selectedPlaylist,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 50,
                       ),
                     ),
@@ -522,9 +588,9 @@ class _DesktopLanding extends State<DesktopLanding> {
                   FittedBox(
                     fit: BoxFit.fitWidth,
                     child: Text(
-                      'Adjust Sorting Parameters',
+                      'Adjust Sorting Parameters... or use the default ones we provided.',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white,
                         fontSize: 15,
                       ),
                     ),
@@ -555,92 +621,11 @@ class _DesktopLanding extends State<DesktopLanding> {
                           flex: 5,
                           child: Row(children: [
                             Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  FittedBox(
-                                    fit: BoxFit.fitWidth,
-                                    child: Text(
-                                      'Bpm',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 5,
-                                    child: Slider(
-                                      value: bpm.toDouble(),
-                                      min: 0,
-                                      max: 100,
-                                      label: bpm.toString(),
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          bpm = value.toInt();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ])),
+                            genSlider('assets/images/music.PNG', 'Bpm', 'Bpm the song is mainly played in', 0),
                             Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  FittedBox(
-                                    fit: BoxFit.fitWidth,
-                                    child: Text(
-                                      'Key',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 5,
-                                    child: Slider(
-                                      value: key.toDouble(),
-                                      min: 0,
-                                      max: 100,
-                                      label: key.toString(),
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          key = value.toInt();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ])),
+                            genSlider('assets/images/key.PNG','Key', 'Key the song is played in', 1),
                             Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  FittedBox(
-                                    fit: BoxFit.fitWidth,
-                                    child: Text(
-                                      'Energy',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 5,
-                                    child: Slider(
-                                      value: energy.toDouble(),
-                                      min: 0,
-                                      max: 100,
-                                      label: energy.toString(),
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          energy = value.toInt();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ])),
+                            genSlider('assets/images/lightning.PNG','Energy', 'Energy rating of the song based on BPM and Key', 4),
                             Spacer(flex: 1),
                           ]),
                         ),
@@ -649,92 +634,11 @@ class _DesktopLanding extends State<DesktopLanding> {
                           flex: 5,
                           child: Row(children: [
                             Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  FittedBox(
-                                    fit: BoxFit.fitWidth,
-                                    child: Text(
-                                      'Acousticness',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 5,
-                                    child: Slider(
-                                      value: acoustic.toDouble(),
-                                      min: 0,
-                                      max: 100,
-                                      label: acoustic.toString(),
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          acoustic = value.toInt();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ])),
+                            genSlider('assets/images/guitar.PNG','Acousticness', 'The Likelyhood that a song is acoustic', 3),
                             Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  FittedBox(
-                                    fit: BoxFit.fitWidth,
-                                    child: Text(
-                                      'Danceabilty',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 5,
-                                    child: Slider(
-                                      value: dance.toDouble(),
-                                      min: 0,
-                                      max: 100,
-                                      label: dance.toString(),
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          dance = value.toInt();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ])),
+                            genSlider('assets/images/disco-ball.PNG','Danceability', 'Measure of how danceable the song is', 2),
                             Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  FittedBox(
-                                    fit: BoxFit.fitWidth,
-                                    child: Text(
-                                      'Loudness',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 5, 
-                                    child: Slider(
-                                      value: loudness.toDouble(),
-                                      min: 0,
-                                      max: 100,
-                                      label: loudness.toString(),
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          loudness = value.toInt();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ])),
+                            genSlider('assets/images/volume-up-interface-symbol.PNG',"Loudness", 'Average decible value of the song', 6),
                             Spacer(flex: 1),
                           ]),
                         ),
@@ -743,92 +647,11 @@ class _DesktopLanding extends State<DesktopLanding> {
                           flex: 5,
                           child: Row(children: [
                             Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  FittedBox(
-                                    fit: BoxFit.fitWidth,
-                                    child: Text(
-                                      'Liveness',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 5,
-                                    child: Slider(
-                                      value: liveness.toDouble(),
-                                      min: 0,
-                                      max: 100,
-                                      label: liveness.toString(),
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          liveness = value.toInt();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ])),
+                            genSlider('assets/images/stage.PNG','Liveness', 'Measure of how likely the song is to be preformed live', 5),
                             Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [
-                                  FittedBox(
-                                    fit: BoxFit.fitWidth,
-                                    child: Text(
-                                      'Speechiness',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 5,
-                                    child: Slider(
-                                      value: speechiness.toDouble(),
-                                      min: 0,
-                                      max: 100,
-                                      label: speechiness.toString(),
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          speechiness = value.toInt();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ])),
+                            genSlider('assets/images/speech-bubble.PNG','Speechiness', 'Amount of the song that is voice vs instruments', 7),
                             Spacer(flex: 1),
-                            Flexible(
-                                flex: 5,
-                                child: Column(children: [ 
-                                  FittedBox(
-                                    fit: BoxFit.fitHeight,
-                                    child: Text(
-                                      'Valence',
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
-                                  Flexible(
-                                    flex: 5,
-                                    child: Slider(
-                                      value: valence.toDouble(),
-                                      min: 0,
-                                      max: 100,
-                                      label: valence.toString(),
-                                      onChanged: (double value) {
-                                        setState(() {
-                                          valence = value.toInt();
-                                        });
-                                      },
-                                    ),
-                                  ),
-                                ])),
+                            genSlider('assets/images/happiness.PNG','Valence', 'Measure of emotion in the song', 8),
                             Spacer(flex: 1),
                           ]),
                         ),
@@ -839,14 +662,14 @@ class _DesktopLanding extends State<DesktopLanding> {
                           // Time before tooltip is displayed
                           waitDuration: Duration(seconds: 1),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(35),
+                            borderRadius: BorderRadius.circular(15),
                             // Tooltip wrapped over Text button
                             child: TextButton(
                               // Sets the text to the main font and gives padding + color
                               style: TextButton.styleFrom(
                                 backgroundColor:
                                     Color.fromRGBO(29, 185, 84, 1.0),
-                                padding: const EdgeInsets.all(35.0),
+                                padding: const EdgeInsets.all(30.0),
                                 primary: Colors.black,
                               ),
                               // Sets the icon Label to log in text
@@ -855,13 +678,12 @@ class _DesktopLanding extends State<DesktopLanding> {
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
-                                  fontSize: 30,
+                                  fontSize: 25,
                                 ),
                               ),
                               // When pressed, increment the selection
                               onPressed: () {
                                 incrementSelected();
-                                // This is also where Oauth2 will go
                               },
                             ),
                           ),
@@ -940,6 +762,15 @@ class _DesktopLanding extends State<DesktopLanding> {
     return height;
   }
 
+  Color colorSelector(int sel)
+  {
+    if(selected == 0)
+    {
+      return Color.fromRGBO(29, 185, 84, 1.0);
+    }
+    return Color.fromRGBO(25, 20, 20, 1.0);
+  }
+
   // Handeling the animated switches on the landing page
   @override
   Widget build(BuildContext context) {
@@ -997,9 +828,9 @@ class _DesktopLanding extends State<DesktopLanding> {
           // Decoration of the animated container
           decoration: BoxDecoration(
             // Sets to spotify green
-            color: Color.fromRGBO(29, 185, 84, 1.0),
+            color: colorSelector(selected), ////////////////////////////////////////////
             // Sets rounded corners
-            borderRadius: BorderRadius.all(Radius.circular(20)),
+            borderRadius: BorderRadius.all(Radius.circular(10)),
             // Creates box shadow
             boxShadow: const [
               BoxShadow(
