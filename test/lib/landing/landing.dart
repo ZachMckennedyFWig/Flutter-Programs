@@ -84,6 +84,11 @@ class _DesktopLanding extends State<DesktopLanding> {
   List<dynamic> playlistNames = [];
   List<dynamic> playlistId = [];
   List<dynamic> playlistPicture = [];
+  List<dynamic> gridColors = [];
+
+  List<dynamic> trackNames = [];
+  List<dynamic> trackArtists = [];
+  List<dynamic> trackPicture = [];
 
   bool first_start = true;
 
@@ -128,6 +133,16 @@ class _DesktopLanding extends State<DesktopLanding> {
     incrementSelected();
   }
 
+  void grabTrackInfo(var jsonResponse){
+    var tracks = jsonResponse['tracks'];
+
+    for (int i = 0; i < tracks.length; i++) {
+      trackNames.insert(i, tracks[i]['track_info']['name']);
+      trackArtists.insert(i, tracks[i]['track_info']['artists']);
+      trackPicture.insert(i, tracks[i]['track_info']['url']);
+    }
+  }
+
   void webInitialization() async {
     // Function that kicks off the users experience, if the user has visited before it will
     //  remember them and automatically move to the playlist select page but if not, they
@@ -154,6 +169,27 @@ class _DesktopLanding extends State<DesktopLanding> {
         selected = 0;
       });
     }
+  }
+
+  void trackGetter() async {
+    // Function that kicks off the users experience, if the user has visited before it will
+    //  remember them and automatically move to the playlist select page but if not, they
+    //  will be taken to the beginning and prompted to log in.
+
+    // Default link to API
+    String query = 'http://127.0.0.1:5000/api/sort?playlist_id=' + selectedPlaylistId 
+                      + '&bpm=' + elements[0].toString() + '&key=' + elements[1].toString()
+                      + '&dance=' + elements[2].toString() + '&acoustic=' + elements[3].toString()
+                      + '&energy=' + elements[4].toString() + "&live=" + elements[5].toString()
+                      + '&loud=' + elements[6].toString() + '&speech=' + elements[7].toString()
+                      + '&valence=' + elements[8].toString();
+    String response = await getList(query);
+    //print(response);
+
+    // Decode json into a string
+    var jsonResponse = convert.jsonDecode(response);
+
+    grabTrackInfo(jsonResponse);
   }
 
   void logIn() async {
@@ -299,9 +335,17 @@ class _DesktopLanding extends State<DesktopLanding> {
             ),
             // Sets the key to the iteration value so the animator knows that this is a different container from the previous
             key: ValueKey<int>(selected));
+          // Creates the Colors for the playlist backgrounds. This has to be here because
+          // when rescaling the page it reruns the color selector. By having it here they don't
+          // change as the page is scaled. This is a strange bug.  
+          for(int i = 0; i < playlistNames.length; i++)
+          {
+            gridColors.insert(i, Colors.primaries[Random().nextInt(Colors.primaries.length)]);
+          }
         break;
       // Playlist Selector page
       case 1:
+      print(playlistPicture);
         if(hasPlaylists)
         {
           // Wrapped in container to get parents size
@@ -429,9 +473,9 @@ class _DesktopLanding extends State<DesktopLanding> {
                                           // Container to hold the grid
                                           child: Container(
                                               // Slightly lighter gray so it pops out
-                                              color:
-                                                  //Color.fromRGBO(42, 37, 37, 1.0),
-                                                  Colors.primaries[Random().nextInt(Colors.primaries.length)],
+                                              //color: gridColors[index],
+                                              color: Colors.primaries[Random().nextInt(Colors.primaries.length)],
+                                                  //Color.fromRGBO(42, 37, 37, 1.0),  
                                               // Column of elements inside each grid
                                               //  Playlist image -> Playlist title
                                               child: Container(
@@ -699,9 +743,29 @@ class _DesktopLanding extends State<DesktopLanding> {
             key: ValueKey<int>(selected));
         break;
       case 3:
-        child = Text('Here is Playlist',
-            style: TextStyle(color: Colors.white, fontSize: 30),
-            key: ValueKey<int>(selected));
+        trackGetter();
+        child = ListView.builder(
+          padding: const EdgeInsets.all(8),
+          itemCount: trackNames.length,
+          itemBuilder: (BuildContext context, int index) {
+            return Container(
+              height: 50,
+              color: Color.fromRGBO(25, 20, 20, 1.0),
+              child: Row(
+                children: [
+                    Spacer(flex: 1),
+                    Text(index.toString()),
+                    Spacer(flex:1),
+                    Flexible(
+                      flex: 10,
+                      child: Image.network(trackPicture[index]),
+                      )
+
+                  ],
+                )
+             );
+          }
+        );
         break;
     }
     // Returns the Widget
