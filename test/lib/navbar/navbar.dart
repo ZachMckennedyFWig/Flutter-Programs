@@ -36,7 +36,11 @@ class DesktopNavbar extends StatelessWidget {
               child: Text(
                 "Sortify", 
                 style: TextStyle(
-                  fontWeight: FontWeight.bold, color: Colors.white, fontSize: 100, letterSpacing: 0),
+                  fontFamily: "Spotify",
+                  fontWeight: FontWeight.bold, 
+                  color: Colors.white, 
+                  fontSize: 100, 
+                  letterSpacing: 0),
               ),
             ),
           ),
@@ -53,7 +57,10 @@ class DesktopNavbar extends StatelessWidget {
                     fit: BoxFit.fitWidth,
                     child: Text(
                       "Home", 
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        fontFamily: "Spotify",
+                        color: Colors.white
+                        ),
                     ),
                   ),
                 ),
@@ -65,7 +72,10 @@ class DesktopNavbar extends StatelessWidget {
                     fit: BoxFit.fitWidth,
                     child: Text(
                       "About", 
-                      style: TextStyle(color: Colors.white),
+                      style: TextStyle(
+                        fontFamily: "Spotify",
+                        color: Colors.white
+                        ),
                     ),
                   ),
                 ),

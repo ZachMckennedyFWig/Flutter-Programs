@@ -91,5 +91,18 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
+  fonts:
+    - family: Spotify
+      fonts:
+        - asset: assets/fonts/CircularStd-Medium.ttf
+    - family: SpotifyBold
+      fonts:
+        - asset: assets/fonts/CircularStd-Bold.ttf
+    - family: SpotifyBlack
+      fonts:
+        - asset: assets/fonts/CircularStd-Black.ttf
+   
+
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

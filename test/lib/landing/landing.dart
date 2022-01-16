@@ -127,6 +127,7 @@ class _DesktopLanding extends State<DesktopLanding> {
           playlistNames.insert(i, playlists[i]['name']);
           playlistId.insert(i, playlists[i]['id']);
           playlistPicture.insert(i, playlists[i]['image_link']);
+          gridColors.insert(i, Colors.primaries[Random().nextInt(Colors.primaries.length)]);
         }
       }
     });
@@ -135,12 +136,14 @@ class _DesktopLanding extends State<DesktopLanding> {
 
   void grabTrackInfo(var jsonResponse){
     var tracks = jsonResponse['tracks'];
+    print(tracks);
 
     for (int i = 0; i < tracks.length; i++) {
       trackNames.insert(i, tracks[i]['track_info']['name']);
       trackArtists.insert(i, tracks[i]['track_info']['artists']);
       trackPicture.insert(i, tracks[i]['track_info']['url']);
     }
+    print(trackNames.length);
   }
 
   void webInitialization() async {
@@ -246,6 +249,7 @@ class _DesktopLanding extends State<DesktopLanding> {
               Text(
                 title,
                 style: TextStyle(
+                  fontFamily: 'Spotify',
                   color: Colors.white,
                   fontSize: 15,
                 ),
@@ -276,7 +280,7 @@ class _DesktopLanding extends State<DesktopLanding> {
     // val -> the current state the program should be in
 
     // sets child to default value so it is allowed to be returned
-    Widget child = Text('Hello');
+    Widget child = Text('Hello', style: TextStyle(fontFamily: 'SpotifyBold'));
 
     // Variables for layout items:
 
@@ -320,6 +324,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                 label: Text(
                   'Log In',
                   style: TextStyle(
+                    fontFamily: "Spotify",
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     fontSize: 30,
@@ -338,10 +343,6 @@ class _DesktopLanding extends State<DesktopLanding> {
           // Creates the Colors for the playlist backgrounds. This has to be here because
           // when rescaling the page it reruns the color selector. By having it here they don't
           // change as the page is scaled. This is a strange bug.  
-          for(int i = 0; i < playlistNames.length; i++)
-          {
-            gridColors.insert(i, Colors.primaries[Random().nextInt(Colors.primaries.length)]);
-          }
         break;
       // Playlist Selector page
       case 1:
@@ -368,6 +369,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                       child: Text(
                         'Welcome, ' + userName,
                         style: TextStyle(
+                          fontFamily: "SpotifyBold",
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 50,
@@ -387,6 +389,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                       child: Text(
                         'Select One Of Your Playlists',
                         style: TextStyle(
+                          fontFamily: "Spotify",
                           color: Colors.white,
                           fontSize: 15,
                         ),
@@ -474,7 +477,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                           child: Container(
                                               // Slightly lighter gray so it pops out
                                               //color: gridColors[index],
-                                              color: Colors.primaries[Random().nextInt(Colors.primaries.length)],
+                                              color: gridColors[index],
                                                   //Color.fromRGBO(42, 37, 37, 1.0),  
                                               // Column of elements inside each grid
                                               //  Playlist image -> Playlist title
@@ -517,6 +520,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                           playlistNames[index],
                                                           overflow: TextOverflow.ellipsis,
                                                           style: TextStyle(
+                                                            fontFamily: 'Spotify',
                                                             color: Colors.white,
                                                             
                                                           ),
@@ -563,6 +567,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                       child: Text(
                         'Welcome, ' + userName,
                         style: TextStyle(
+                          fontFamily: "Spotify",
                           fontWeight: FontWeight.bold,
                           color: Colors.white,
                           fontSize: 50,
@@ -582,6 +587,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                       child: Text(
                         'Please Create a Playlist with at least 5 songs in Spotify and then Come Back',
                         style: TextStyle(
+                          fontFamily: "Spotify",
                           color: Colors.white,
                           fontSize: 25,
                         ),
@@ -615,6 +621,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                     child: Text(
                       selectedPlaylist,
                       style: TextStyle(
+                        fontFamily: "Spotify",
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                         fontSize: 50,
@@ -634,6 +641,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                     child: Text(
                       'Adjust Sorting Parameters... or use the default ones we provided.',
                       style: TextStyle(
+                        fontFamily: "Spotify",
                         color: Colors.white,
                         fontSize: 15,
                       ),
@@ -706,7 +714,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                           // Time before tooltip is displayed
                           waitDuration: Duration(seconds: 1),
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(15),
+                            borderRadius: BorderRadius.circular(25),
                             // Tooltip wrapped over Text button
                             child: TextButton(
                               // Sets the text to the main font and gives padding + color
@@ -720,6 +728,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                               child: Text(
                                 'Sort Playlist',
                                 style: TextStyle(
+                                  fontFamily: "Spotify",
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black,
                                   fontSize: 25,
@@ -741,30 +750,168 @@ class _DesktopLanding extends State<DesktopLanding> {
             ),
             // Sets the key to the iteration value so the animator knows that this is a different container from the previous
             key: ValueKey<int>(selected));
+            trackGetter();
         break;
       case 3:
-        trackGetter();
-        child = ListView.builder(
-          padding: const EdgeInsets.all(8),
-          itemCount: trackNames.length,
-          itemBuilder: (BuildContext context, int index) {
-            return Container(
-              height: 50,
-              color: Color.fromRGBO(25, 20, 20, 1.0),
-              child: Row(
-                children: [
-                    Spacer(flex: 1),
-                    Text(index.toString()),
-                    Spacer(flex:1),
-                    Flexible(
-                      flex: 10,
-                      child: Image.network(trackPicture[index]),
-                      )
-
-                  ],
-                )
-             );
-          }
+        child = Stack(
+          children: [Column(
+              children: [
+                Spacer(flex: 1),
+                Flexible(
+                  flex: 30,
+                  child: Row(
+                    children: [
+                      Spacer(flex: 2),
+                      Flexible(
+                        flex: 30,
+                        child: Image.network(selectedPlaylistPic),
+                      ),
+                      Spacer(flex: 2),
+                      Flexible(
+                        flex: 80,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          Flexible(
+                            child: Text(
+                              selectedPlaylist,
+                              //overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                letterSpacing: -1,
+                                fontFamily: "SpotifyBlack",
+                                //fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 90,
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            child: Text(
+                              '  By: ' + userName,
+                              //overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                letterSpacing: 0,
+                                fontFamily: "Spotify",
+                                //fontWeight: FontWeight.bold,
+                                color: Color.fromRGBO(175, 170, 170, 1.0),
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ],
+                  )
+                ),
+                Flexible(
+                  flex: 70,
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    child: ListView.builder(
+                      itemCount: trackNames.length,
+                      itemBuilder: (context, position) {
+                        return Container(
+                          height: 74,
+                          color: Color.fromRGBO(45, 40, 40, 1.0),
+                          child: Row(
+                            children: [
+                              Spacer(flex: 1),
+                              Flexible(
+                                flex: 40,
+                                child: Container( 
+                                  width: 30,
+                                  child: Text(
+                                    (position+1).toString(), 
+                                    textAlign: TextAlign.end,
+                                    style: TextStyle(
+                                      fontFamily: "Spotify",
+                                      color: Colors.white, 
+                                      fontSize: 17.0
+                                      ),
+                                    ),
+                                ),
+                              ),
+                              Spacer(flex: 5),
+                              Flexible(
+                                flex: 40,
+                                child: Image.network(trackPicture[position])
+                              ),
+                              Spacer(flex: 2),
+                              Flexible(
+                                flex: 80,
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                      Text(
+                                        trackNames[position].toString(),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontFamily: "Spotify",
+                                          color: Colors.white, 
+                                          fontSize: 17.0
+                                          ),
+                                      ),
+                                      Text(
+                                        trackArtists[position][1].toString(),
+                                        overflow: TextOverflow.ellipsis,
+                                        style: TextStyle(
+                                          fontFamily: "Spotify",
+                                          color: Color.fromRGBO(125, 120, 120, 1.0), 
+                                          fontSize: 13.0
+                                          ),
+                                      ),
+                                    ],
+                                  )
+                              ),
+                            ]
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Container(
+              padding: EdgeInsets.only(bottom: 20),
+              alignment: Alignment.bottomCenter,
+              child: Tooltip(
+                // Tooltip message
+                message: 'Save Playlist to your account',
+                // Time before tooltip is displayed
+                waitDuration: Duration(seconds: 1),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  // Tooltip wrapped over Text button
+                  child: TextButton(
+                    // Sets the text to the main font and gives padding + color
+                    style: TextButton.styleFrom(
+                      backgroundColor:
+                          Color.fromRGBO(29, 185, 84, 0.5),
+                      padding: const EdgeInsets.all(30.0),
+                      primary: Colors.black,
+                    ),
+                    // Sets the icon Label to log in text
+                    child: Text(
+                      'Save Playlist',
+                      style: TextStyle(
+                        fontFamily: "Spotify",
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 25,
+                      ),
+                    ),
+                    // When pressed, increment the selection
+                    onPressed: () {
+                      // Save the Playlist, Create some kind of response
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ]
         );
         break;
     }
@@ -816,11 +963,10 @@ class _DesktopLanding extends State<DesktopLanding> {
         height = maxHeight*0.95;
         break;
       case 2: // Selecting Parameters
-        height = (maxHeight - 233) *
-            0.9; // 233 is the number of pixels left, Idk how to make it dynamic LUL
+        height = (maxHeight) * 0.9; // 233 is the number of pixels left, Idk how to make it dynamic LUL
         break;
       case 3: // Viewing Sorted Playlist
-        height = (maxHeight - 233) * 0.9;
+        height = (maxHeight) * 0.9;
         break;
     }
     return height;
@@ -925,6 +1071,29 @@ class MobileLanding extends StatelessWidget {
   }
 }
 
+// Working List Builder
+
+/*
+
+Container(
+          padding: EdgeInsets.all(10),
+          child: ListView.builder(
+            itemCount: trackNames.length,
+            itemBuilder: (context, position) {
+              return Container(
+                height: 50,
+                color: Color.fromRGBO(45, 40, 40, 1.0),
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text((position+1).toString(), style: TextStyle(color: Colors.white, fontSize: 15.0),),
+                ),
+              );
+            },
+          ),
+        );
+
+
+*/
 // Working main switcher
 
 /*
