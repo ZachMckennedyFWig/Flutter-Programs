@@ -29,7 +29,7 @@ class DesktopNavbar extends StatelessWidget {
         children:[
           Spacer(flex: 1),
           Flexible(
-            flex: 15,
+            flex: 45,
             child:
             FittedBox(
               fit: BoxFit.fitWidth,
@@ -45,43 +45,6 @@ class DesktopNavbar extends StatelessWidget {
             ),
           ),
           Spacer(flex: 1),
-          Flexible(
-            flex: 3,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Flexible(
-                  flex: 20,
-                  child: 
-                  FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: Text(
-                      "Home", 
-                      style: TextStyle(
-                        fontFamily: "Spotify",
-                        color: Colors.white
-                        ),
-                    ),
-                  ),
-                ),
-                Spacer(flex: 1),
-                Flexible(
-                  flex: 20,
-                  child: 
-                  FittedBox(
-                    fit: BoxFit.fitWidth,
-                    child: Text(
-                      "About", 
-                      style: TextStyle(
-                        fontFamily: "Spotify",
-                        color: Colors.white
-                        ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
         ],
       ),
     );

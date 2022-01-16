@@ -708,39 +708,86 @@ class _DesktopLanding extends State<DesktopLanding> {
                           ]),
                         ),
                         Spacer(flex: 1),
-                        Tooltip(
-                          // Tooltip message
-                          message: 'Sort Playlist Using These Parameters',
-                          // Time before tooltip is displayed
-                          waitDuration: Duration(seconds: 1),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(25),
-                            // Tooltip wrapped over Text button
-                            child: TextButton(
-                              // Sets the text to the main font and gives padding + color
-                              style: TextButton.styleFrom(
-                                backgroundColor:
-                                    Color.fromRGBO(29, 185, 84, 1.0),
-                                padding: const EdgeInsets.all(30.0),
-                                primary: Colors.black,
-                              ),
-                              // Sets the icon Label to log in text
-                              child: Text(
-                                'Sort Playlist',
-                                style: TextStyle(
-                                  fontFamily: "Spotify",
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  fontSize: 25,
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(bottom: 20),
+                              alignment: Alignment.bottomCenter,
+                              child: Tooltip(
+                                // Tooltip message
+                                message: 'Return to playlist selection',
+                                // Time before tooltip is displayed
+                                waitDuration: Duration(seconds: 1),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(25),
+                                  // Tooltip wrapped over Text button
+                                  child: TextButton(
+                                    // Sets the text to the main font and gives padding + color
+                                    style: TextButton.styleFrom(
+                                      backgroundColor:
+                                          //Color.fromRGBO(200, 25, 64, 1.0),
+                                          Color.fromRGBO(25, 20, 20, 1.0),
+                                      padding: const EdgeInsets.all(15.0),
+                                      primary: Colors.black,
+                                    ),
+                                    // Sets the icon Label to log in text
+                                    child: Text(
+                                      'Back',
+                                      style: TextStyle(
+                                        fontFamily: "Spotify",
+                                        fontWeight: FontWeight.bold,
+                                        color: Color.fromRGBO(125, 120, 120, 1.0),
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    // When pressed, decrement the selection
+                                    onPressed: () {
+                                      decrementSelected();
+                                    },
+                                  ),
                                 ),
                               ),
-                              // When pressed, increment the selection
-                              onPressed: () {
-                                incrementSelected();
-                              },
                             ),
-                          ),
-                        ),
+                            SizedBox(width: 10,),
+                            Container(
+                              padding: EdgeInsets.only(bottom: 20),
+                              alignment: Alignment.bottomCenter,
+                              child: Tooltip(
+                                // Tooltip message
+                                message: 'Sort the playlist based on these parameters',
+                                // Time before tooltip is displayed
+                                waitDuration: Duration(seconds: 1),
+                                child: ClipRRect(
+                                  borderRadius: BorderRadius.circular(25),
+                                  // Tooltip wrapped over Text button
+                                  child: TextButton(
+                                    // Sets the text to the main font and gives padding + color
+                                    style: TextButton.styleFrom(
+                                      backgroundColor:
+                                          Color.fromRGBO(29, 185, 84, 1.0),
+                                      padding: const EdgeInsets.all(15.0),
+                                      primary: Colors.black,
+                                    ),
+                                    // Sets the icon Label to log in text
+                                    child: Text(
+                                      'Sort Playlist',
+                                      style: TextStyle(
+                                        fontFamily: "Spotify",
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                        fontSize: 15,
+                                      ),
+                                    ),
+                                    // When pressed, increment the selection
+                                    onPressed: () {
+                                      incrementSelected();
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ]),
                         Spacer(flex: 1),
                       ]),
                     ),
@@ -805,7 +852,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                   )
                 ),
                 Flexible(
-                  flex: 70,
+                  flex: 90,
                   child: Container(
                     padding: EdgeInsets.all(10),
                     child: ListView.builder(
@@ -874,43 +921,86 @@ class _DesktopLanding extends State<DesktopLanding> {
                 ),
               ],
             ),
-            Container(
-              padding: EdgeInsets.only(bottom: 20),
-              alignment: Alignment.bottomCenter,
-              child: Tooltip(
-                // Tooltip message
-                message: 'Save Playlist to your account',
-                // Time before tooltip is displayed
-                waitDuration: Duration(seconds: 1),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(25),
-                  // Tooltip wrapped over Text button
-                  child: TextButton(
-                    // Sets the text to the main font and gives padding + color
-                    style: TextButton.styleFrom(
-                      backgroundColor:
-                          Color.fromRGBO(29, 185, 84, 0.5),
-                      padding: const EdgeInsets.all(30.0),
-                      primary: Colors.black,
-                    ),
-                    // Sets the icon Label to log in text
-                    child: Text(
-                      'Save Playlist',
-                      style: TextStyle(
-                        fontFamily: "Spotify",
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                        fontSize: 25,
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(bottom: 20),
+                  alignment: Alignment.bottomCenter,
+                  child: Tooltip(
+                    // Tooltip message
+                    message: 'Return to parameter ajustment',
+                    // Time before tooltip is displayed
+                    waitDuration: Duration(seconds: 1),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      // Tooltip wrapped over Text button
+                      child: TextButton(
+                        // Sets the text to the main font and gives padding + color
+                        style: TextButton.styleFrom(
+                          backgroundColor:
+                              //Color.fromRGBO(200, 25, 64, 1.0),
+                              Color.fromRGBO(25, 20, 20, 1.0),
+                          padding: const EdgeInsets.all(15.0),
+                          primary: Colors.black,
+                        ),
+                        // Sets the icon Label to log in text
+                        child: Text(
+                          'Back',
+                          style: TextStyle(
+                            fontFamily: "Spotify",
+                            fontWeight: FontWeight.bold,
+                            color: Color.fromRGBO(125, 120, 120, 1.0),
+                            fontSize: 15,
+                          ),
+                        ),
+                        // When pressed, decrement the selection
+                        onPressed: () {
+                          decrementSelected();
+                        },
                       ),
                     ),
-                    // When pressed, increment the selection
-                    onPressed: () {
-                      // Save the Playlist, Create some kind of response
-                    },
                   ),
                 ),
-              ),
-            ),
+                SizedBox(width: 10,),
+                Container(
+                  padding: EdgeInsets.only(bottom: 20),
+                  alignment: Alignment.bottomCenter,
+                  child: Tooltip(
+                    // Tooltip message
+                    message: 'Save Playlist to your account',
+                    // Time before tooltip is displayed
+                    waitDuration: Duration(seconds: 1),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(25),
+                      // Tooltip wrapped over Text button
+                      child: TextButton(
+                        // Sets the text to the main font and gives padding + color
+                        style: TextButton.styleFrom(
+                          backgroundColor:
+                              Color.fromRGBO(29, 185, 84, 1.0),
+                          padding: const EdgeInsets.all(15.0),
+                          primary: Colors.black,
+                        ),
+                        // Sets the icon Label to log in text
+                        child: Text(
+                          'Save Playlist',
+                          style: TextStyle(
+                            fontFamily: "Spotify",
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 15,
+                          ),
+                        ),
+                        // When pressed, increment the selection
+                        onPressed: () {
+                          // Save the Playlist, Create some kind of response
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+            ]),
           ]
         );
         break;
