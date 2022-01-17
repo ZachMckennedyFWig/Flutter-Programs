@@ -193,7 +193,7 @@ class _DesktopLanding extends State<DesktopLanding> {
   }
 
   void savePlaylist() async{
-    String response = await postList('http://127.0.0.1:5000/api/save_playlist');
+    String response = await getList('http://127.0.0.1:5000/api/save_playlist?name=' + selectedPlaylist + '&image=' + selectedPlaylistPic);
 
     // Decode json into a string
     var jsonResponse = convert.jsonDecode(response);
@@ -225,7 +225,7 @@ class _DesktopLanding extends State<DesktopLanding> {
 
   void logIn() async {
     html.window.location.assign(
-        "https://accounts.spotify.com/authorize?client_id=7c9a373b495447e3a9992322ee41ec94&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Foauth&scope=playlist-read-private+playlist-modify-public");
+        "https://accounts.spotify.com/authorize?client_id=7c9a373b495447e3a9992322ee41ec94&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Foauth&scope=playlist-read-private+playlist-modify-public+ugc-image-upload");
   }
 
   // Increments the state by 1
