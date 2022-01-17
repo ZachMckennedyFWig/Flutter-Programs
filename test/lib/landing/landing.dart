@@ -174,7 +174,7 @@ class _DesktopLanding extends State<DesktopLanding> {
     }
   }
 
-  void trackGetter() async {
+  Future trackGetter() async {
     // Function that kicks off the users experience, if the user has visited before it will
     //  remember them and automatically move to the playlist select page but if not, they
     //  will be taken to the beginning and prompted to log in.
@@ -193,6 +193,7 @@ class _DesktopLanding extends State<DesktopLanding> {
     var jsonResponse = convert.jsonDecode(response);
 
     grabTrackInfo(jsonResponse);
+    return true;
   }
 
   void logIn() async {
@@ -797,7 +798,6 @@ class _DesktopLanding extends State<DesktopLanding> {
             ),
             // Sets the key to the iteration value so the animator knows that this is a different container from the previous
             key: ValueKey<int>(selected));
-            trackGetter();
         break;
       case 3:
         child = Stack(
@@ -855,67 +855,86 @@ class _DesktopLanding extends State<DesktopLanding> {
                   flex: 90,
                   child: Container(
                     padding: EdgeInsets.all(10),
-                    child: ListView.builder(
-                      itemCount: trackNames.length,
-                      itemBuilder: (context, position) {
-                        return Container(
-                          height: 74,
-                          color: Color.fromRGBO(45, 40, 40, 1.0),
-                          child: Row(
-                            children: [
-                              Spacer(flex: 1),
-                              Flexible(
-                                flex: 40,
-                                child: Container( 
-                                  width: 30,
-                                  child: Text(
-                                    (position+1).toString(), 
-                                    textAlign: TextAlign.end,
-                                    style: TextStyle(
-                                      fontFamily: "Spotify",
-                                      color: Colors.white, 
-                                      fontSize: 17.0
-                                      ),
-                                    ),
-                                ),
-                              ),
-                              Spacer(flex: 5),
-                              Flexible(
-                                flex: 40,
-                                child: Image.network(trackPicture[position])
-                              ),
-                              Spacer(flex: 2),
-                              Flexible(
-                                flex: 80,
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                      Text(
-                                        trackNames[position].toString(),
-                                        overflow: TextOverflow.ellipsis,
+                    child: FutureBuilder(
+                      future: trackGetter(),
+                      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                      if(snapshot.connectionState == ConnectionState.done){
+                        return ListView.builder(
+                          itemCount: trackNames.length,
+                          itemBuilder: (context, position) {
+                            return Container(
+                              height: 74,
+                              color: Color.fromRGBO(45, 40, 40, 1.0),
+                              child: Row(
+                                children: [
+                                  Spacer(flex: 1),
+                                  Flexible(
+                                    flex: 40,
+                                    child: Container( 
+                                      width: 30,
+                                      child: Text(
+                                        (position+1).toString(), 
+                                        textAlign: TextAlign.end,
                                         style: TextStyle(
                                           fontFamily: "Spotify",
                                           color: Colors.white, 
                                           fontSize: 17.0
                                           ),
-                                      ),
-                                      Text(
-                                        trackArtists[position][1].toString(),
-                                        overflow: TextOverflow.ellipsis,
-                                        style: TextStyle(
-                                          fontFamily: "Spotify",
-                                          color: Color.fromRGBO(125, 120, 120, 1.0), 
-                                          fontSize: 13.0
+                                        ),
+                                    ),
+                                  ),
+                                  Spacer(flex: 5),
+                                  Flexible(
+                                    flex: 40,
+                                    child: Image.network(trackPicture[position])
+                                  ),
+                                  Spacer(flex: 2),
+                                  Flexible(
+                                    flex: 80,
+                                    child: Column(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                          Text(
+                                            trackNames[position].toString(),
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontFamily: "Spotify",
+                                              color: Colors.white, 
+                                              fontSize: 17.0
+                                              ),
                                           ),
-                                      ),
-                                    ],
-                                  )
+                                          Text(
+                                            trackArtists[position][1].toString(),
+                                            overflow: TextOverflow.ellipsis,
+                                            style: TextStyle(
+                                              fontFamily: "Spotify",
+                                              color: Color.fromRGBO(125, 120, 120, 1.0), 
+                                              fontSize: 13.0
+                                              ),
+                                          ),
+                                        ],
+                                      )
+                                  ),
+                                ]
                               ),
-                            ]
-                          ),
+                            );
+                          },
                         );
-                      },
+                      }
+                      else
+                      {
+                        return Text(
+                          'Loading Playlist...', 
+                          textAlign: TextAlign.end,
+                          style: TextStyle(
+                            fontFamily: "Spotify",
+                            color: Colors.white, 
+                            fontSize: 17.0
+                            ),
+                          );
+                      }
+                      }
                     ),
                   ),
                 ),
@@ -1160,6 +1179,23 @@ class MobileLanding extends StatelessWidget {
     return Container();
   }
 }
+
+
+/*
+
+FutureBuilder<String>(
+          future: getData(), // if you mean this method well return image url
+          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+            if(snapshot.connectionState == ConnectionState.done){
+              return Image.network(snapshot.data);
+            }else if(snapshot.connectionState == ConnectionState.waiting){
+              return Text("loading ...");
+             }
+          },
+        )
+
+*/
+
 
 // Working List Builder
 
