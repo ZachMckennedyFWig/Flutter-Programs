@@ -883,7 +883,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                         ),
                                     ),
                                   ),
-                                  Spacer(flex: 5),
+                                  SizedBox(width: 30,),
                                   Flexible(
                                     flex: 40,
                                     child: Image.network(trackPicture[position])
@@ -976,6 +976,9 @@ class _DesktopLanding extends State<DesktopLanding> {
                         // When pressed, decrement the selection
                         onPressed: () {
                           decrementSelected();
+                          trackArtists.clear();
+                          trackNames.clear();
+                          trackPicture.clear();
                         },
                       ),
                     ),
