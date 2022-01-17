@@ -170,7 +170,7 @@ class _DesktopLanding extends State<DesktopLanding> {
     //  will be taken to the beginning and prompted to log in.
 
     // Default link to API
-    String response = await getList('http://127.0.0.1:5000/');
+    String response = await getList('https://api.sortify.me/');
     //print(response);
 
     // Decode json into a string
@@ -194,7 +194,7 @@ class _DesktopLanding extends State<DesktopLanding> {
 
   void savePlaylist() async {
     String response = await getList(
-        'http://127.0.0.1:5000/api/save_playlist?name=' +
+        'https://api.sortify.me/api/save_playlist?name=' +
             selectedPlaylist +
             '&image=' +
             selectedPlaylistPic);
@@ -211,7 +211,7 @@ class _DesktopLanding extends State<DesktopLanding> {
     //  will be taken to the beginning and prompted to log in.
 
     // Default link to API
-    String query = 'http://127.0.0.1:5000/api/sort?playlist_id=' +
+    String query = 'https://api.sortify.me/api/sort?playlist_id=' +
         selectedPlaylistId +
         '&bpm=' +
         elements[0].toString() +
