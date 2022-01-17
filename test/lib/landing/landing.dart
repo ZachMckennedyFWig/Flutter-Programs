@@ -65,6 +65,8 @@ class _DesktopLanding extends State<DesktopLanding> {
   dynamic selectedPlaylistId = "";
   dynamic selectedPlaylistPic = "";
 
+  dynamic createdPlaylistLink = "";
+
   // List of all the elements in order:
   /*
     0) bpm
@@ -97,6 +99,22 @@ class _DesktopLanding extends State<DesktopLanding> {
   Future<String> getList(String url) async {
     var auth = js.context.callMethod('getAuthorization', []);
     var response = await http.get(Uri.parse(url), headers: {
+      "Access-Control-Allow-Origin": "*",
+      HttpHeaders.authorizationHeader: auth,
+      HttpHeaders.contentTypeHeader: 'application/json'
+    });
+    //var response = js.context.callMethod('httpRequest', [url, "GET"]);
+
+    if (response.statusCode == 200) {
+      return response.body;
+    } else {
+      throw Error();
+    }
+  }
+
+  Future<String> postList(String url) async {
+    var auth = js.context.callMethod('getAuthorization', []);
+    var response = await http.post(Uri.parse(url), headers: {
       "Access-Control-Allow-Origin": "*",
       HttpHeaders.authorizationHeader: auth,
       HttpHeaders.contentTypeHeader: 'application/json'
@@ -174,6 +192,15 @@ class _DesktopLanding extends State<DesktopLanding> {
     }
   }
 
+  void savePlaylist() async{
+    String response = await postList('http://127.0.0.1:5000/api/save_playlist');
+
+    // Decode json into a string
+    var jsonResponse = convert.jsonDecode(response);
+
+    createdPlaylistLink = jsonResponse['link'];
+  }
+
   Future trackGetter() async {
     // Function that kicks off the users experience, if the user has visited before it will
     //  remember them and automatically move to the playlist select page but if not, they
@@ -206,11 +233,11 @@ class _DesktopLanding extends State<DesktopLanding> {
     // Function to Iterate the selector value for the state of the program
     // val -> value of the current state that needs to be iterated
     setState(() {
-      if (selected < 3) {
+      if (selected < 4) {
         // Current amount of max states is 3
         selected++;
       } else {
-        selected = 0;
+        selected = 1;
       }
       // Tells the animator that it should be using the animation
       switching = true;
@@ -225,7 +252,7 @@ class _DesktopLanding extends State<DesktopLanding> {
       if (selected > 0) {
         selected--;
       } else {
-        selected = 3; // Current amount of max states is 3
+        selected = 4; // Current amount of max states is 3
       }
       // Tells the animator that it should be using the animation
       switching = true;
@@ -273,7 +300,6 @@ class _DesktopLanding extends State<DesktopLanding> {
           ),
         );
   }
-
 
 
   Widget giveChild(double maxWidth, double maxHeight) {
@@ -1017,6 +1043,10 @@ class _DesktopLanding extends State<DesktopLanding> {
                         // When pressed, increment the selection
                         onPressed: () {
                           // Save the Playlist, Create some kind of response
+                          //***************** Placeholder for API CAll to save */
+                          /////////////////////////////////////////////////////
+                          savePlaylist();
+                          incrementSelected();
                         },
                       ),
                     ),
@@ -1025,6 +1055,150 @@ class _DesktopLanding extends State<DesktopLanding> {
             ]),
           ]
         );
+        break;
+      case 4: 
+        child = Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Spacer(flex: 1),
+                Flexible(
+                  flex: 50,
+                  child: Row(
+                    children: [
+                      Spacer(flex: 2),
+                      Flexible(
+                        flex: 30,
+                        child: Image.network(selectedPlaylistPic),
+                      ),
+                      Spacer(flex: 2),
+                      Flexible(
+                        flex: 80,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                          Flexible(
+                            child: Text(
+                              selectedPlaylist,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                letterSpacing: -1,
+                                fontFamily: "SpotifyBlack",
+                                //fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                                fontSize: 50,
+                              ),
+                            ),
+                          ),
+                          Flexible(
+                            child: Text(
+                              '  By: ' + userName,
+                              //overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                letterSpacing: 0,
+                                fontFamily: "Spotify",
+                                //fontWeight: FontWeight.bold,
+                                color: Color.fromRGBO(175, 170, 170, 1.0),
+                                fontSize: 17,
+                              ),
+                            ),
+                          ),
+                        ]),
+                      ),
+                    ],
+                  )
+                ),
+                Flexible(
+                  flex: 20,
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(bottom: 20),
+                        alignment: Alignment.bottomCenter,
+                        child: Tooltip(
+                          // Tooltip message
+                          message: 'Click to open playlist in browser',
+                          // Time before tooltip is displayed
+                          waitDuration: Duration(seconds: 1),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(25),
+                            // Tooltip wrapped over Text button
+                            child: TextButton(
+                              // Sets the text to the main font and gives padding + color
+                              style: TextButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromRGBO(25, 20, 20, 1.0),
+                                padding: const EdgeInsets.all(15.0),
+                                primary: Colors.black,
+                              ),
+                              // Sets the icon Label to log in text
+                              child: Text(
+                                'Open Playlist',
+                                style: TextStyle(
+                                  fontFamily: "Spotify",
+                                  fontWeight: FontWeight.bold,
+                                  color: Color.fromRGBO(125, 120, 120, 1.0),
+                                  fontSize: 15,
+                                ),
+                              ),
+                              // When pressed, increment the selection
+                              onPressed: () {
+                                // open link to playlist: js.context.callMethod('open', ['link to playlist']);
+                                js.context.callMethod('open', [createdPlaylistLink]);
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(width: 10,),
+                      Container(
+                        padding: EdgeInsets.only(bottom: 20),
+                        alignment: Alignment.bottomCenter,
+                        child: Tooltip(
+                          // Tooltip message
+                          message: 'Return to Playlist Selector',
+                          // Time before tooltip is displayed
+                          waitDuration: Duration(seconds: 1),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(25),
+                            // Tooltip wrapped over Text button
+                            child: TextButton(
+                              // Sets the text to the main font and gives padding + color
+                              style: TextButton.styleFrom(
+                                backgroundColor:
+                                    Color.fromRGBO(29, 185, 84, 1.0),
+                                padding: const EdgeInsets.all(15.0),
+                                primary: Colors.black,
+                              ),
+                              // Sets the icon Label to log in text
+                              child: Text(
+                                'Home',
+                                style: TextStyle(
+                                  fontFamily: "Spotify",
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontSize: 15,
+                                ),
+                              ),
+                              // When pressed, increment the selection
+                              onPressed: () {
+                                incrementSelected();
+                                trackArtists.clear();
+                                trackNames.clear();
+                                trackPicture.clear();
+                              },
+                            ),
+                          ),
+                        ),
+                      ),
+                    ]
+                  ),
+                ),
+              ],
+            );
+          
         break;
     }
     // Returns the Widget
@@ -1053,6 +1227,9 @@ class _DesktopLanding extends State<DesktopLanding> {
       case 3: // Viewing Sorted Playlist
         width = maxWidth * 0.8;
         break;
+      case 4: // Viewing Sorted Playlist
+        width = maxWidth * 0.5;
+        break;
     }
     // Returns correct width
     return width;
@@ -1080,6 +1257,8 @@ class _DesktopLanding extends State<DesktopLanding> {
       case 3: // Viewing Sorted Playlist
         height = (maxHeight) * 0.9;
         break;
+      case 4:
+        height = (maxHeight) * 0.25;
     }
     return height;
   }
