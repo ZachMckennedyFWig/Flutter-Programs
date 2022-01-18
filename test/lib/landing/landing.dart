@@ -1,7 +1,5 @@
 // ignore_for_file: file_names, prefer_const_constructors
-
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,26 +11,13 @@ import 'dart:async';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
 import 'dart:math';
 
-int globalSelected = 0;
-
-var pictureList = [
-  'assets/images/test-thumbnail.jpg',
-  'assets/images/test-thumbnail.jpg',
-  'assets/images/test-thumbnail.jpg',
-  'assets/images/test-thumbnail.jpg',
-  'assets/images/test-thumbnail.jpg',
-  'assets/images/test-thumbnail.jpg',
-  'assets/images/test-thumbnail.jpg',
-  'assets/images/test-thumbnail.jpg',
-  'assets/images/test-thumbnail.jpg',
-  'assets/images/test-thumbnail.jpg',
-];
-
+// Landing class to determing aspect ratios for UI
 class landing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
+        // If the width of the screen is greater than 1200 pixels, return Desktop Style UI, else return Mobile UI
         if (constraints.maxWidth > 1200) {
           return DesktopLanding();
         } else {
@@ -51,7 +36,7 @@ class DesktopLanding extends StatefulWidget {
   State<DesktopLanding> createState() => _DesktopLanding();
 }
 
-/// This is the private State class that goes with MyStatefulWidget.
+/// This is the private Stateful class that goes with MyStatefulWidget.
 class _DesktopLanding extends State<DesktopLanding> {
   // This class manages the state of the landing page and what it is current displaying
   //  with animations between the transitions.
@@ -62,49 +47,58 @@ class _DesktopLanding extends State<DesktopLanding> {
   bool switching = false;
   // Variable to store the selected playlists name
   dynamic selectedPlaylist = "";
+  // Variable to store the selected playlist Id
   dynamic selectedPlaylistId = "";
+  // Variable to store the selected playlist Image Link
   dynamic selectedPlaylistPic = "";
 
+  // Variable to store the link to the created playlist
   dynamic createdPlaylistLink = "";
 
-  // List of all the elements in order:
-  /*
-    0) bpm
-    1) key 
-    2) dance
-    3) acoustic
-    4) energy
-    5) liveness 
-    6) loudness
-    7) speechiness
-    8) valence
-  */
+  // List of all the track elements in order: (This is used for the sliders)
+  // 0) bpm 1) key  2) dance 3) acoustic 4) energy 5) liveness  6) loudness 7) speechiness 8) valence
   List<int> elements = [100, 80, 35, 25, 65, 0, 20, 15, 30];
 
+  // Variable to store the Username of the current user
   dynamic userName = "";
 
+  // List to store the names of all the users playlists
   List<dynamic> playlistNames = [];
+  // List to store the Ids of all the users playlists
   List<dynamic> playlistId = [];
+  // List to store the image links of all the users playlists
   List<dynamic> playlistPicture = [];
+  // List to store the random colors of the playlist gridveiw
   List<dynamic> gridColors = [];
 
+  // List to store the selected playlists track names
   List<dynamic> trackNames = [];
+  // List to store the selected playlists track artists names
   List<dynamic> trackArtists = [];
+  // List to store the selected playlists track album image links
   List<dynamic> trackPicture = [];
+  // List to store the selected playlists track Ids
+  List<dynamic> trackId = [];
 
-  bool first_start = true;
+  // Variable to tell the program if this is the initial opening. This is to ensure proper API calls when launched.
+  bool firstStart = true;
 
+  // Variable that controls widget feedback if the user has playlists or not
   bool hasPlaylists = false; 
 
   Future<String> getList(String url) async {
+    // Utility Function for API calls, preforms GET request on the given link and returns the json response body
+    // url -> String of the API url you are requesting
+
     var auth = js.context.callMethod('getAuthorization', []);
     var response = await http.get(Uri.parse(url), headers: {
       "Access-Control-Allow-Origin": "*",
       HttpHeaders.authorizationHeader: auth,
       HttpHeaders.contentTypeHeader: 'application/json'
     });
-    //var response = js.context.callMethod('httpRequest', [url, "GET"]);
+    // NOTE: Access control allow orgin header required accroding to stack overflow :p 
 
+    // Throws error if connection to API is not successful (Status code not 200)
     if (response.statusCode == 200) {
       return response.body;
     } else {
@@ -112,15 +106,24 @@ class _DesktopLanding extends State<DesktopLanding> {
     }
   }
 
-  Future<String> postList(String url) async {
+  Future<String> postList(String url, Map jsonBody) async {
+    // Utility Function for API calls, preforms POST request on the given link with "jsonBody" acting as the posted body, also returns the Json response. 
+    // url -> String of the API url you are requesting
+    // jsonBody -> Map of the information you want to use for the body, Map is required for json conversion
+
     var auth = js.context.callMethod('getAuthorization', []);
-    var response = await http.post(Uri.parse(url), headers: {
+    var response = await http.post(Uri.parse(url), 
+    headers: {
       "Access-Control-Allow-Origin": "*",
       HttpHeaders.authorizationHeader: auth,
-      HttpHeaders.contentTypeHeader: 'application/json'
-    });
-    //var response = js.context.callMethod('httpRequest', [url, "GET"]);
+      HttpHeaders.contentTypeHeader: 'application/json', 
+    },
+    // Encodes the given Map to a json before posting
+    body: convert.jsonEncode(jsonBody),
+    );
+    // NOTE: Access control allow orgin header required accroding to stack overflow :p 
 
+    // Throws error if connection to API is not successful
     if (response.statusCode == 200) {
       return response.body;
     } else {
@@ -129,39 +132,47 @@ class _DesktopLanding extends State<DesktopLanding> {
   }
 
   void grabUserInfo(var jsonResponse) {
-    // Function to grab the given users information from the json response
+    // Utility Function to grab the given users information from the API's json response
     // jsonResponse -> decoded json of the users basic info
 
-    // sets the state of the class variables to appropriate values
+    // Sets the state of the class, this creates an update to all displayed widgets
     setState(() {
+      // Grabs name of the user
       userName = jsonResponse['name'];
+      // Checks if user has playlists
       hasPlaylists = jsonResponse['have_playlists'];
 
-      if (hasPlaylists)
-      {
+      // If the user has a playlist
+      if (hasPlaylists){
         var playlists = jsonResponse['playlists'];
 
+        // Store all playlist data in delegated List
         for (int i = 0; i < playlists.length; i++) {
           playlistNames.insert(i, playlists[i]['name']);
           playlistId.insert(i, playlists[i]['id']);
           playlistPicture.insert(i, playlists[i]['image_link']);
+          // Generates a random primary color to set the background of the grid to
           gridColors.insert(i, Colors.primaries[Random().nextInt(Colors.primaries.length)]);
         }
       }
     });
+    // Advance to the next section
     incrementSelected();
   }
 
   void grabTrackInfo(var jsonResponse){
-    var tracks = jsonResponse['tracks'];
-    print(tracks);
+    // Utility Function to grab the given track information from the API's json response
+    // jsonResponse -> decoded json of the selected playlists track information
 
+    var tracks = jsonResponse['tracks'];
+
+    // Store all track data in delegated List
     for (int i = 0; i < tracks.length; i++) {
       trackNames.insert(i, tracks[i]['track_info']['name']);
       trackArtists.insert(i, tracks[i]['track_info']['artists']);
       trackPicture.insert(i, tracks[i]['track_info']['url']);
+      trackId.insert(i, tracks[i]['track_info']['id']);
     }
-    print(trackNames.length);
   }
 
   void webInitialization() async {
@@ -171,7 +182,6 @@ class _DesktopLanding extends State<DesktopLanding> {
 
     // Default link to API
     String response = await getList('http://127.0.0.1:5000/');
-    //print(response);
 
     // Decode json into a string
     var jsonResponse = convert.jsonDecode(response);
@@ -193,44 +203,53 @@ class _DesktopLanding extends State<DesktopLanding> {
   }
 
   void savePlaylist() async{
-    String response = await getList('http://127.0.0.1:5000/api/save_playlist?name=' + selectedPlaylist + '&image=' + selectedPlaylistPic);
+    // Utility Function to save the playlist asyncronously 
+
+    // Create map of the track Ids so they can be converted into a json for a POST request
+    Map playlistTracks = {
+        'tracks': trackId
+    };
+
+    // API request to save the playlist in the order of trackId, stores the raw json response returned from the API
+    String response = await postList('http://127.0.0.1:5000/api/save_playlist?name=' + selectedPlaylist + '&image=' + selectedPlaylistPic, playlistTracks);
 
     // Decode json into a string
     var jsonResponse = convert.jsonDecode(response);
 
+    // Stores the link to the created playlist
     createdPlaylistLink = jsonResponse['link'];
   }
 
   Future trackGetter() async {
-    // Function that kicks off the users experience, if the user has visited before it will
-    //  remember them and automatically move to the playlist select page but if not, they
-    //  will be taken to the beginning and prompted to log in.
+    // Utility Function to get the sorted track information from the API asyncronously
 
-    // Default link to API
+    // Concatonated string for the API call
     String query = 'http://127.0.0.1:5000/api/sort?playlist_id=' + selectedPlaylistId 
                       + '&bpm=' + elements[0].toString() + '&key=' + elements[1].toString()
                       + '&dance=' + elements[2].toString() + '&acoustic=' + elements[3].toString()
                       + '&energy=' + elements[4].toString() + "&live=" + elements[5].toString()
                       + '&loud=' + elements[6].toString() + '&speech=' + elements[7].toString()
                       + '&valence=' + elements[8].toString();
+    // Quries the API call and returns the raw json
     String response = await getList(query);
-    //print(response);
 
     // Decode json into a string
     var jsonResponse = convert.jsonDecode(response);
 
+    // Stores track info in the delegated Lists
     grabTrackInfo(jsonResponse);
+    // Informs Future Builder that it has completed the API call
     return true;
   }
 
   void logIn() async {
+    // Utlity function to redirect the user to the Spotify Login page to link their spotify account to the program
     html.window.location.assign(
         "https://accounts.spotify.com/authorize?client_id=7c9a373b495447e3a9992322ee41ec94&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Foauth&scope=playlist-read-private+playlist-modify-public+ugc-image-upload");
   }
 
-  // Increments the state by 1
   void incrementSelected() {
-    // Function to Iterate the selector value for the state of the program
+    // Function to Iterate the selector value for the state of the program by 1 with overflow protection
     // val -> value of the current state that needs to be iterated
     setState(() {
       if (selected < 4) {
@@ -244,9 +263,8 @@ class _DesktopLanding extends State<DesktopLanding> {
     });
   }
 
-  // Decrements the state by 1
   void decrementSelected() {
-    // Function to Decrement the selected value for the state of the program
+    // Function to Decrement the selected value for the state of the program with overflow protection
     // val -> value of the current state that needs to be decremented
     setState(() {
       if (selected > 0) {
@@ -264,10 +282,9 @@ class _DesktopLanding extends State<DesktopLanding> {
   Widget genSlider(String imagePath, String title, String message, int index)
   {
     // Builds a Slider based on the style and index of variable array assigned
-    /*
-      title -> String of the label above the slider
-      index -> Index of array that the data will be stored in 
-    */
+    // title -> String of the label above the slider
+    // index -> Index of array that the data will be stored in 
+
   return Flexible(
           flex: 5,
           child: Tooltip(
@@ -373,7 +390,6 @@ class _DesktopLanding extends State<DesktopLanding> {
         break;
       // Playlist Selector page
       case 1:
-      print(playlistPicture);
         if(hasPlaylists)
         {
           // Wrapped in container to get parents size
@@ -478,7 +494,6 @@ class _DesktopLanding extends State<DesktopLanding> {
                                       onTap: () {
                                         // Move to the next page
                                         incrementSelected();
-                                        //print('cringe ' + index.toString());
                                         setState(() {
                                           selectedPlaylist = playlistNames[index];
                                           selectedPlaylistId = playlistId[index];
@@ -1005,6 +1020,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                           trackArtists.clear();
                           trackNames.clear();
                           trackPicture.clear();
+                          trackId.clear();
                         },
                       ),
                     ),
@@ -1188,6 +1204,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                                 trackArtists.clear();
                                 trackNames.clear();
                                 trackPicture.clear();
+                                trackId.clear();
                               },
                             ),
                           ),
@@ -1275,10 +1292,10 @@ class _DesktopLanding extends State<DesktopLanding> {
   // Handeling the animated switches on the landing page
   @override
   Widget build(BuildContext context) {
-    if (first_start) {
+    if (firstStart) {
       webInitialization();
       setState(() {
-        first_start = false;
+        firstStart = false;
       });
     }
     // Container to get the parents size
@@ -1362,269 +1379,3 @@ class MobileLanding extends StatelessWidget {
   }
 }
 
-
-/*
-
-FutureBuilder<String>(
-          future: getData(), // if you mean this method well return image url
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            if(snapshot.connectionState == ConnectionState.done){
-              return Image.network(snapshot.data);
-            }else if(snapshot.connectionState == ConnectionState.waiting){
-              return Text("loading ...");
-             }
-          },
-        )
-
-*/
-
-
-// Working List Builder
-
-/*
-
-Container(
-          padding: EdgeInsets.all(10),
-          child: ListView.builder(
-            itemCount: trackNames.length,
-            itemBuilder: (context, position) {
-              return Container(
-                height: 50,
-                color: Color.fromRGBO(45, 40, 40, 1.0),
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text((position+1).toString(), style: TextStyle(color: Colors.white, fontSize: 15.0),),
-                ),
-              );
-            },
-          ),
-        );
-
-
-*/
-// Working main switcher
-
-/*
-Flexible(
-      child: AnimatedContainer(
-        width: widthSelector(),
-        height: heightSelector(),
-        alignment: Alignment.center,
-        duration: const Duration(seconds: 1),
-        curve: Curves.fastOutSlowIn,
-        child: AnimatedSwitcher(
-                duration: const Duration(milliseconds: 1500),
-                transitionBuilder: (Widget child, Animation<double> animation) {
-                  return FadeTransition(
-                          opacity: Tween<double>(begin: 0.0, end: 1.0).animate(
-                            CurvedAnimation(
-                              parent: animation,
-                              curve: Interval(0.5, 1.0),
-                            ),
-                          ),
-                          child: child,
-                        );
-                },
-                child: giveChild(),
-                switchInCurve: Curves.easeIn,
-                switchOutCurve: Curves.easeOut,
-              ),
-        decoration: BoxDecoration(
-            color: Color.fromRGBO(29, 185, 84, 1.0),
-            borderRadius: BorderRadius.all(Radius.circular(20)),
-            boxShadow: const [
-              BoxShadow(
-                color: Colors.black,
-                blurRadius: 35.0, // soften the shadow
-                spreadRadius: 8.0, //extend the shadow
-                offset: Offset(
-                  0.0, // Move to right 10  horizontally
-                  0.0, // Move to bottom 10 Vertically
-                ),
-              )
-            ],
-        ),
-      ),
-    );
-*/
-
-// Working second screen....
-
-/*
-Container(
-                  width: double.infinity,
-                  height: heightSelector(),
-                  //alignment: Alignment.topCenter,
-                  child: Column(
-                            children: [
-                              SizedBox(height: 15),
-                              Text(
-                                'Welcome, Zach',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black, 
-                                  fontSize: 50,
-                                  ),
-                              ),
-                              SizedBox(height: 10),
-                              Text(
-                                'Select One Of Your Playlists',
-                                style: TextStyle(
-                                  color: Colors.black, 
-                                  fontSize: 15,
-                                  ),
-                              ),
-                              SizedBox(height: 25,),
-                              ClipRRect(
-                               borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(5),
-                                                topRight: Radius.circular(5),
-                                                bottomLeft: Radius.circular(18),
-                                                bottomRight: Radius.circular(18),
-                                              ),
-                                child: Container(
-                                  width: widthSelector(),
-                                  height: (heightSelector() - 127),
-                                  color: Color.fromRGBO(25, 20, 20, 1.0),
-                                  child: Column(
-                                          children: <Widget>[
-                                              SizedBox(height: 30,),
-                                              ClipRRect(
-                                                borderRadius: BorderRadius.circular(5),
-                                                child: Container(
-                                                  width: gridWidth,
-                                                  height: gridHeight,
-                                                  child: GridView.builder(
-                                                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                                                        crossAxisCount: axisCount,
-                                                        crossAxisSpacing: crossSpace,
-                                                        mainAxisSpacing: vertSpace,
-                                                        childAspectRatio: gridBoxAspect,
-                                                      ),
-                                                      itemCount: pictureList.length,
-                                                      itemBuilder: (BuildContext context, int index) {
-                                                        return 
-                                                        GestureDetector(
-                                                          behavior: HitTestBehavior.translucent,
-                                                          onTap: () {
-                                                            incrementSelected();
-                                                            print('cringe'); 
-                                                            // Playlist is clicked, return the playlist.
-                                                          },
-                                                          child: MouseRegion(
-                                                            cursor: SystemMouseCursors.click,
-                                                            child:ClipRRect(
-                                                              borderRadius: BorderRadius.circular(5),
-                                                              child: Container(
-                                                                color: Color.fromRGBO(30, 25, 25, 1.0),
-                                                                child: Column( 
-                                                                children: <Widget> [
-                                                                    SizedBox(height: 20,),
-                                                                    ClipRRect(
-                                                                      borderRadius: BorderRadius.circular(5),
-                                                                      child: Image.asset(
-                                                                        pictureList[index],
-                                                                        width: gridBoxWidth*0.9,
-                                                                        height: gridBoxWidth*0.9,
-                                                                      ),
-                                                                    ),
-                                                                    SizedBox(height: 20,),
-                                                                    Row(
-                                                                      children: <Widget> [
-                                                                        SizedBox(width: 25,),
-                                                                        Text(
-                                                                        'Playlist ' + index.toString(),
-                                                                        textAlign: TextAlign.left,
-                                                                        style: TextStyle(
-                                                                          //fontWeight: FontWeight.bold,
-                                                                          color: Colors.white, 
-                                                                          fontSize: 18,
-                                                                          ),
-                                                                        ),
-                                                                      ]
-                                                                    ),
-                                                                  ],
-                                                                )
-                                                              ),
-                                                            ),
-                                                          ),
-                                                        );
-                                                      },
-                                                    )
-                                                ),
-                                              ),
-                                            ],
-                                          )
-                                  )
-                              ),
-                            ], 
-                          ),
-                  key: ValueKey<int>(selected)
-                );
-*/
-
-//                            Old code that I am just keeping around for referance.......
-
-/*
-        Center(
-          child: Container(
-            height: MediaQuery.of(context).size.height - 233,
-            width: MediaQuery.of(context).size.width,
-            alignment: Alignment.bottomCenter,
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topCenter,
-                end: Alignment.bottomCenter,
-                colors: [Color.fromRGBO(25, 20, 20, 1.0),Color.fromRGBO(29, 185, 84, 1.0)]
-              ),
-              borderRadius: BorderRadius.only(topLeft: Radius.circular(40), topRight: Radius.circular(40)),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black,
-                  blurRadius: 25.0, // soften the shadow
-                  spreadRadius: 5.0, //extend the shadow
-                  offset: Offset(
-                    0.0, // Move to right 10  horizontally
-                    -15.0, // Move to bottom 10 Vertically
-                  ),
-                )
-              ],
-            ),
-          ),
-        ),
-        //padding: const EdgeInsets.all(20),
-        Center(
-          child:
-          Column(
-            children: [
-              const SizedBox(
-                height: 50,
-              ),
-              const SizedBox(height: 50),
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(10),
-                  child: Stack(
-                    children: <Widget>[
-                      Positioned.fill(
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            color: Color.fromRGBO(29, 185, 84, 1.0) 
-                          ),
-                        ),
-                      ),
-                      TextButton(
-                        style: TextButton.styleFrom(
-                          padding: const EdgeInsets.all(16.0),
-                          primary: Colors.black,
-                          textStyle: const TextStyle(fontSize: 40),
-                        ),
-                        onPressed: () {},
-                        child: const Text('Sign In'),
-                      ),
-                    ]
-                  )
-                ),
-            ]
-          )
-        ),
-*/
