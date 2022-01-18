@@ -65140,7 +65140,7 @@ T(a,b){var s=null
 return M.cf(s,s,C.l,s,s,s,s,s,s,s,s,s,s,s)}}
 F.FN.prototype={
 T(a,b){var s=null,r=P.ac(255,139,195,74),q=P.ac(61,139,195,74),p=P.ac(82,29,185,84),o=P.ac(31,29,185,84),n=P.ac(138,178,255,89),m=P.ac(138,139,195,74),l=P.ac(31,178,255,89),k=P.ac(31,29,185,84),j=P.ac(255,139,195,74)
-return new S.w5(new F.FO(s),"Flutter Demo",X.anM(s,C.pF,Q.ai7(n,r,l,p,k,o,P.ac(82,29,185,84),m,q,s,C.j,P.ac(31,139,195,74),C.jf,C.xH,C.xI,C.xJ,C.xz,C.i4,j,s,C.jg,C.jh,2,C.ji,P.ac(255,139,195,74),C.xA,C.Pt)),s)}}
+return new S.w5(new F.FO(s),"Sortify",X.anM(s,C.pF,Q.ai7(n,r,l,p,k,o,P.ac(82,29,185,84),m,q,s,C.j,P.ac(31,139,195,74),C.jf,C.xH,C.xI,C.xJ,C.xz,C.i4,j,s,C.jg,C.jh,2,C.ji,P.ac(255,139,195,74),C.xA,C.Pt)),s)}}
 F.FO.prototype={
 T(a,b){var s=null,r=b.a9(t.w).f,q=P.axN(10,10)
 return new M.xm(M.cf(s,T.awn(M.cf(C.wy,T.fB(H.a([new T.br(5,C.A,new O.Re(s),s),C.MW,new T.br(25,C.A,new L.Ra(s),s)],t.E),C.V,C.ad),C.l,C.zS,s,s,s,s,s,s,s,s,s,s),q),C.l,s,s,C.wV,s,r.a.b,s,s,s,s,s,s),s)}}

@@ -1,11 +1,11 @@
 {
-    "name": "test",
-    "short_name": "test",
+    "name": "Sortify",
+    "short_name": "Sortify",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Sorts your spotify playlists based on given parameters.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
