@@ -35,9 +35,11 @@
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
   <script>
-    var spr = new XMLHttpRequest();
-    spr.open("GET", "http://localhost:5000/port?port=" + window.location.port);
-    spr.send();
+    if(window.location.toString().startsWith("http://localhost") || window.location.toString().startsWith("http://127.0.0.1")){
+      var spr = new XMLHttpRequest();
+      spr.open("GET", "http://localhost:5000/port?port=" + window.location.port);
+      spr.send();
+    }
 
     const urlParams = new URLSearchParams(window.location.search);
     if(urlParams.has('token'))

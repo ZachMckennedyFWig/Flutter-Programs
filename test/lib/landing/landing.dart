@@ -9,6 +9,7 @@ import 'dart:js' as js;
 import 'dart:convert' as convert;
 import 'dart:async';
 import 'package:flutter_web_auth/flutter_web_auth.dart';
+import 'package:flutter/foundation.dart' as Foundation;
 import 'dart:math';
 
 // Landing class to determing aspect ratios for UI
@@ -84,7 +85,11 @@ class _DesktopLanding extends State<DesktopLanding> {
   bool firstStart = true;
 
   // Variable that controls widget feedback if the user has playlists or not
-  bool hasPlaylists = false; 
+  bool hasPlaylists = false;
+
+  String baseApiURL = (Foundation.kReleaseMode)
+      ? "https://api.sortify.me"
+      : "http://localhost:5000";
 
   Future<String> getList(String url) async {
     // Utility Function for API calls, preforms GET request on the given link and returns the json response body
@@ -96,7 +101,7 @@ class _DesktopLanding extends State<DesktopLanding> {
       HttpHeaders.authorizationHeader: auth,
       HttpHeaders.contentTypeHeader: 'application/json'
     });
-    // NOTE: Access control allow orgin header required accroding to stack overflow :p 
+    // NOTE: Access control allow orgin header required accroding to stack overflow :p
 
     // Throws error if connection to API is not successful (Status code not 200)
     if (response.statusCode == 200) {
@@ -107,21 +112,22 @@ class _DesktopLanding extends State<DesktopLanding> {
   }
 
   Future<String> postList(String url, Map jsonBody) async {
-    // Utility Function for API calls, preforms POST request on the given link with "jsonBody" acting as the posted body, also returns the Json response. 
+    // Utility Function for API calls, preforms POST request on the given link with "jsonBody" acting as the posted body, also returns the Json response.
     // url -> String of the API url you are requesting
     // jsonBody -> Map of the information you want to use for the body, Map is required for json conversion
 
     var auth = js.context.callMethod('getAuthorization', []);
-    var response = await http.post(Uri.parse(url), 
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      HttpHeaders.authorizationHeader: auth,
-      HttpHeaders.contentTypeHeader: 'application/json', 
-    },
-    // Encodes the given Map to a json before posting
-    body: convert.jsonEncode(jsonBody),
+    var response = await http.post(
+      Uri.parse(url),
+      headers: {
+        "Access-Control-Allow-Origin": "*",
+        HttpHeaders.authorizationHeader: auth,
+        HttpHeaders.contentTypeHeader: 'application/json',
+      },
+      // Encodes the given Map to a json before posting
+      body: convert.jsonEncode(jsonBody),
     );
-    // NOTE: Access control allow orgin header required accroding to stack overflow :p 
+    // NOTE: Access control allow orgin header required accroding to stack overflow :p
 
     // Throws error if connection to API is not successful
     if (response.statusCode == 200) {
@@ -143,7 +149,7 @@ class _DesktopLanding extends State<DesktopLanding> {
       hasPlaylists = jsonResponse['have_playlists'];
 
       // If the user has a playlist
-      if (hasPlaylists){
+      if (hasPlaylists) {
         var playlists = jsonResponse['playlists'];
 
         // Store all playlist data in delegated List
@@ -152,7 +158,8 @@ class _DesktopLanding extends State<DesktopLanding> {
           playlistId.insert(i, playlists[i]['id']);
           playlistPicture.insert(i, playlists[i]['image_link']);
           // Generates a random primary color to set the background of the grid to
-          gridColors.insert(i, Colors.primaries[Random().nextInt(Colors.primaries.length)]);
+          gridColors.insert(
+              i, Colors.primaries[Random().nextInt(Colors.primaries.length)]);
         }
       }
     });
@@ -160,7 +167,7 @@ class _DesktopLanding extends State<DesktopLanding> {
     incrementSelected();
   }
 
-  void grabTrackInfo(var jsonResponse){
+  void grabTrackInfo(var jsonResponse) {
     // Utility Function to grab the given track information from the API's json response
     // jsonResponse -> decoded json of the selected playlists track information
 
@@ -181,7 +188,7 @@ class _DesktopLanding extends State<DesktopLanding> {
     //  will be taken to the beginning and prompted to log in.
 
     // Default link to API
-    String response = await getList('http://127.0.0.1:5000/');
+    String response = await getList(baseApiURL + '/');
 
     // Decode json into a string
     var jsonResponse = convert.jsonDecode(response);
@@ -202,16 +209,20 @@ class _DesktopLanding extends State<DesktopLanding> {
     }
   }
 
-  void savePlaylist() async{
-    // Utility Function to save the playlist asyncronously 
+  void savePlaylist() async {
+    // Utility Function to save the playlist asyncronously
 
     // Create map of the track Ids so they can be converted into a json for a POST request
-    Map playlistTracks = {
-        'tracks': trackId
-    };
+    Map playlistTracks = {'tracks': trackId};
 
     // API request to save the playlist in the order of trackId, stores the raw json response returned from the API
-    String response = await postList('http://127.0.0.1:5000/api/save_playlist?name=' + selectedPlaylist + '&image=' + selectedPlaylistPic, playlistTracks);
+    String response = await postList(
+        baseApiURL +
+            '/api/save_playlist?name=' +
+            selectedPlaylist +
+            '&image=' +
+            selectedPlaylistPic,
+        playlistTracks);
 
     // Decode json into a string
     var jsonResponse = convert.jsonDecode(response);
@@ -224,12 +235,27 @@ class _DesktopLanding extends State<DesktopLanding> {
     // Utility Function to get the sorted track information from the API asyncronously
 
     // Concatonated string for the API call
-    String query = 'http://127.0.0.1:5000/api/sort?playlist_id=' + selectedPlaylistId 
-                      + '&bpm=' + elements[0].toString() + '&key=' + elements[1].toString()
-                      + '&dance=' + elements[2].toString() + '&acoustic=' + elements[3].toString()
-                      + '&energy=' + elements[4].toString() + "&live=" + elements[5].toString()
-                      + '&loud=' + elements[6].toString() + '&speech=' + elements[7].toString()
-                      + '&valence=' + elements[8].toString();
+    String query = baseApiURL +
+        '/api/sort?playlist_id=' +
+        selectedPlaylistId +
+        '&bpm=' +
+        elements[0].toString() +
+        '&key=' +
+        elements[1].toString() +
+        '&dance=' +
+        elements[2].toString() +
+        '&acoustic=' +
+        elements[3].toString() +
+        '&energy=' +
+        elements[4].toString() +
+        "&live=" +
+        elements[5].toString() +
+        '&loud=' +
+        elements[6].toString() +
+        '&speech=' +
+        elements[7].toString() +
+        '&valence=' +
+        elements[8].toString();
     // Quries the API call and returns the raw json
     String response = await getList(query);
 
@@ -242,10 +268,20 @@ class _DesktopLanding extends State<DesktopLanding> {
     return true;
   }
 
+  String encodeURL(String url) {
+    // Utility Function to encode the given url to a valid URL
+    // url -> String of the url you want to encode
+
+    // Encodes the url to a valid URL
+    return url.replaceAll(":", "%3A").replaceAll("/", "%2F");
+  }
+
   void logIn() async {
     // Utlity function to redirect the user to the Spotify Login page to link their spotify account to the program
     html.window.location.assign(
-        "https://accounts.spotify.com/authorize?client_id=7c9a373b495447e3a9992322ee41ec94&response_type=code&redirect_uri=http%3A%2F%2Flocalhost%3A5000%2Foauth&scope=playlist-read-private+playlist-modify-public+ugc-image-upload");
+        "https://accounts.spotify.com/authorize?client_id=7c9a373b495447e3a9992322ee41ec94&response_type=code&redirect_uri=" +
+            (baseApiURL + "/oauth") +
+            "&scope=playlist-read-private+playlist-modify-public+ugc-image-upload");
   }
 
   void incrementSelected() {
@@ -277,47 +313,44 @@ class _DesktopLanding extends State<DesktopLanding> {
     });
   }
 
-
   // Function to generate sliders
-  Widget genSlider(String imagePath, String title, String message, int index)
-  {
+  Widget genSlider(String imagePath, String title, String message, int index) {
     // Builds a Slider based on the style and index of variable array assigned
     // title -> String of the label above the slider
-    // index -> Index of array that the data will be stored in 
+    // index -> Index of array that the data will be stored in
 
-  return Flexible(
-          flex: 5,
-          child: Tooltip(
-            message: message,
-            waitDuration: Duration(milliseconds: 250),
-            child: Column(children: [
-              Text(
-                title,
-                style: TextStyle(
-                  fontFamily: 'Spotify',
-                  color: Colors.white,
-                  fontSize: 15,
-                ),
-              ),
-              Flexible(
-                flex: 5,
-                child: Slider(
-                  value: elements[index].toDouble(),
-                  min: 0,
-                  max: 100,
-                  label: elements[index].toString(),
-                  onChanged: (double value) {
-                    setState(() {
-                      elements[index] = value.toInt();
-                    });
-                  },
-                ),
-              ),
-            ]),
+    return Flexible(
+      flex: 5,
+      child: Tooltip(
+        message: message,
+        waitDuration: Duration(milliseconds: 250),
+        child: Column(children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'Spotify',
+              color: Colors.white,
+              fontSize: 15,
+            ),
           ),
-        );
+          Flexible(
+            flex: 5,
+            child: Slider(
+              value: elements[index].toDouble(),
+              min: 0,
+              max: 100,
+              label: elements[index].toString(),
+              onChanged: (double value) {
+                setState(() {
+                  elements[index] = value.toInt();
+                });
+              },
+            ),
+          ),
+        ]),
+      ),
+    );
   }
-
 
   Widget giveChild(double maxWidth, double maxHeight) {
     // Function to return the correct child for the container based on the state of the program
@@ -384,17 +417,16 @@ class _DesktopLanding extends State<DesktopLanding> {
             ),
             // Sets the key to the iteration value so the animator knows that this is a different container from the previous
             key: ValueKey<int>(selected));
-          // Creates the Colors for the playlist backgrounds. This has to be here because
-          // when rescaling the page it reruns the color selector. By having it here they don't
-          // change as the page is scaled. This is a strange bug.  
+        // Creates the Colors for the playlist backgrounds. This has to be here because
+        // when rescaling the page it reruns the color selector. By having it here they don't
+        // change as the page is scaled. This is a strange bug.
         break;
       // Playlist Selector page
       case 1:
-        if(hasPlaylists)
-        {
+        if (hasPlaylists) {
           // Wrapped in container to get parents size
           child = Container(
-            margin: EdgeInsets.only(left: 15, right: 15),
+              margin: EdgeInsets.only(left: 15, right: 15),
               // Column of the elements: Welcome message -> instructions -> Grid View scrollable playlist thing
               child: Column(
                 // Alligns elements to be evenly spread out between the very top and bottom of the container
@@ -406,8 +438,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                   Flexible(
                     flex: 3,
                     // Text that welcomes the user
-                    child: 
-                    FittedBox(
+                    child: FittedBox(
                       fit: BoxFit.fitWidth,
                       child: Text(
                         'Welcome, ' + userName,
@@ -426,8 +457,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                   Flexible(
                     flex: 2,
                     // Text to tell the user to pick a playlist
-                    child: 
-                    FittedBox(
+                    child: FittedBox(
                       fit: BoxFit.fitWidth,
                       child: Text(
                         'Select One Of Your Playlists',
@@ -462,8 +492,8 @@ class _DesktopLanding extends State<DesktopLanding> {
                           // Container to create padding around the grid
                           child: Container(
                             // Left right and bottom padding
-                            padding:
-                                EdgeInsets.only(left: 10, right: 10, bottom: 10),
+                            padding: EdgeInsets.only(
+                                left: 10, right: 10, bottom: 10),
                             // Clips the gridviww box so it doesnt have sharp corners
                             child: ClipRRect(
                                 // Corner clip size
@@ -485,7 +515,8 @@ class _DesktopLanding extends State<DesktopLanding> {
                                   // Number of playlists (based on number of playlist images)
                                   itemCount: playlistNames.length,
                                   // Gridview builder
-                                  itemBuilder: (BuildContext context, int index) {
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
                                     // Returns gesture detector to allow user to click each box
                                     return GestureDetector(
                                       // I don't know what this does
@@ -495,9 +526,12 @@ class _DesktopLanding extends State<DesktopLanding> {
                                         // Move to the next page
                                         incrementSelected();
                                         setState(() {
-                                          selectedPlaylist = playlistNames[index];
-                                          selectedPlaylistId = playlistId[index];
-                                          selectedPlaylistPic = playlistPicture[index];
+                                          selectedPlaylist =
+                                              playlistNames[index];
+                                          selectedPlaylistId =
+                                              playlistId[index];
+                                          selectedPlaylistPic =
+                                              playlistPicture[index];
                                           // ALSO ADD PLAYLIST ID SUTFF HERE TO QUERY LATER THIS IS WHERE WE MOVE ON
                                         });
                                         // Playlist is clicked, return the playlist.
@@ -510,21 +544,22 @@ class _DesktopLanding extends State<DesktopLanding> {
                                         child: ClipRRect(
                                           // Corner clip settings
                                           borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(15), 
+                                            topLeft: Radius.circular(15),
                                             topRight: Radius.circular(15),
                                             bottomLeft: Radius.circular(5),
                                             bottomRight: Radius.circular(5),
-                                            ),
+                                          ),
                                           // Container to hold the grid
                                           child: Container(
-                                              // Slightly lighter gray so it pops out
-                                              //color: gridColors[index],
-                                              color: gridColors[index],
-                                                  //Color.fromRGBO(42, 37, 37, 1.0),  
-                                              // Column of elements inside each grid
-                                              //  Playlist image -> Playlist title
-                                              child: Container(
-                                                color: Color.fromRGBO(0, 0, 0, .5),
+                                            // Slightly lighter gray so it pops out
+                                            //color: gridColors[index],
+                                            color: gridColors[index],
+                                            //Color.fromRGBO(42, 37, 37, 1.0),
+                                            // Column of elements inside each grid
+                                            //  Playlist image -> Playlist title
+                                            child: Container(
+                                                color:
+                                                    Color.fromRGBO(0, 0, 0, .5),
                                                 child: Column(
                                                   children: <Widget>[
                                                     // Top padding, dynamically spaced
@@ -537,12 +572,17 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                         // Corner clip settings
                                                         borderRadius:
                                                             BorderRadius.only(
-                                                              topLeft: Radius.circular(9),
-                                                              topRight: Radius.circular(9),
-                                                              ),
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  9),
+                                                          topRight:
+                                                              Radius.circular(
+                                                                  9),
+                                                        ),
                                                         // Image
                                                         child: Image.network(
-                                                          playlistPicture[index],
+                                                          playlistPicture[
+                                                              index],
                                                           // Sets scale so it takes up a good amount of space
                                                           scale: 0.68,
                                                         ),
@@ -560,11 +600,12 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                         // Playlist title text
                                                         child: Text(
                                                           playlistNames[index],
-                                                          overflow: TextOverflow.ellipsis,
+                                                          overflow: TextOverflow
+                                                              .ellipsis,
                                                           style: TextStyle(
-                                                            fontFamily: 'Spotify',
+                                                            fontFamily:
+                                                                'Spotify',
                                                             color: Colors.white,
-                                                            
                                                           ),
                                                         ),
                                                       ),
@@ -572,9 +613,8 @@ class _DesktopLanding extends State<DesktopLanding> {
                                                     // Spacer to add slight padding to the bottom
                                                     Spacer(flex: 2),
                                                   ],
-                                                )
-                                              ),
-                                            ),
+                                                )),
+                                          ),
                                         ),
                                       ),
                                     );
@@ -587,10 +627,8 @@ class _DesktopLanding extends State<DesktopLanding> {
               ),
               // Sets the key to the iteration value so the animator knows that this is a different container from the previous
               key: ValueKey<int>(selected));
-        }
-        else
-        {
-                    // Wrapped in container to get parents size
+        } else {
+          // Wrapped in container to get parents size
           child = Container(
               // Column of the elements: Welcome message -> instructions -> Grid View scrollable playlist thing
               child: Column(
@@ -601,48 +639,43 @@ class _DesktopLanding extends State<DesktopLanding> {
                   Spacer(flex: 2),
                   // Wraps text in flexible to dynamically spize it
                   Flexible(
-                    flex: 3,
-                    // Text that welcomes the user
-                    child: 
-                    FittedBox(
-                      fit: BoxFit.fitWidth,
-                      child: Text(
-                        'Welcome, ' + userName,
-                        style: TextStyle(
-                          fontFamily: "Spotify",
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                          fontSize: 50,
+                      flex: 3,
+                      // Text that welcomes the user
+                      child: FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: Text(
+                          'Welcome, ' + userName,
+                          style: TextStyle(
+                            fontFamily: "Spotify",
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                            fontSize: 50,
+                          ),
                         ),
-                      ),
-                    )
-                  ),
+                      )),
                   // Dynamic spacer to add padding between the welcome and instruction text
                   Spacer(flex: 5),
                   // Wraps text in flexible to dynamically size it
                   Flexible(
-                    flex: 2,
-                    // Text to tell the user to pick a playlist
-                    child: 
-                    FittedBox(
-                      fit: BoxFit.fitWidth,
-                      child: Text(
-                        'Please Create a Playlist with at least 5 songs in Spotify and then Come Back',
-                        style: TextStyle(
-                          fontFamily: "Spotify",
-                          color: Colors.white,
-                          fontSize: 25,
+                      flex: 2,
+                      // Text to tell the user to pick a playlist
+                      child: FittedBox(
+                        fit: BoxFit.fitWidth,
+                        child: Text(
+                          'Please Create a Playlist with at least 5 songs in Spotify and then Come Back',
+                          style: TextStyle(
+                            fontFamily: "Spotify",
+                            color: Colors.white,
+                            fontSize: 25,
+                          ),
                         ),
-                      ),
-                    )
-                  ),
+                      )),
                   // Dynamic spacer to add padding between the instructions and the grid
                   Spacer(flex: 1),
-                  ],
+                ],
               ),
               // Sets the key to the iteration value so the animator knows that this is a different container from the previous
-              key: ValueKey<int>(selected)
-            );
+              key: ValueKey<int>(selected));
         }
         break;
       case 2:
@@ -657,8 +690,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                 Flexible(
                   flex: 3,
                   // Text that welcomes the user
-                  child: 
-                  FittedBox(
+                  child: FittedBox(
                     fit: BoxFit.fitWidth,
                     child: Text(
                       selectedPlaylist,
@@ -677,8 +709,7 @@ class _DesktopLanding extends State<DesktopLanding> {
                 Flexible(
                   flex: 2,
                   // Text to tell the user to pick a playlist
-                  child: 
-                  FittedBox(
+                  child: FittedBox(
                     fit: BoxFit.fitWidth,
                     child: Text(
                       'Adjust Sorting Parameters... or use the default ones we provided.',
@@ -715,24 +746,17 @@ class _DesktopLanding extends State<DesktopLanding> {
                           flex: 5,
                           child: Row(children: [
                             Spacer(flex: 1),
-                            genSlider('assets/images/music.PNG', 'Bpm', 'Bpm the song is mainly played in', 0),
+                            genSlider('assets/images/music.PNG', 'Bpm',
+                                'Bpm the song is mainly played in', 0),
                             Spacer(flex: 1),
-                            genSlider('assets/images/key.PNG','Key', 'Key the song is played in', 1),
+                            genSlider('assets/images/key.PNG', 'Key',
+                                'Key the song is played in', 1),
                             Spacer(flex: 1),
-                            genSlider('assets/images/lightning.PNG','Energy', 'Energy rating of the song based on BPM and Key', 4),
-                            Spacer(flex: 1),
-                          ]),
-                        ),
-                        Spacer(flex: 1),
-                        Flexible(
-                          flex: 5,
-                          child: Row(children: [
-                            Spacer(flex: 1),
-                            genSlider('assets/images/guitar.PNG','Acousticness', 'The Likelyhood that a song is acoustic', 3),
-                            Spacer(flex: 1),
-                            genSlider('assets/images/disco-ball.PNG','Danceability', 'Measure of how danceable the song is', 2),
-                            Spacer(flex: 1),
-                            genSlider('assets/images/volume-up-interface-symbol.PNG',"Loudness", 'Average decible value of the song', 6),
+                            genSlider(
+                                'assets/images/lightning.PNG',
+                                'Energy',
+                                'Energy rating of the song based on BPM and Key',
+                                4),
                             Spacer(flex: 1),
                           ]),
                         ),
@@ -741,95 +765,133 @@ class _DesktopLanding extends State<DesktopLanding> {
                           flex: 5,
                           child: Row(children: [
                             Spacer(flex: 1),
-                            genSlider('assets/images/stage.PNG','Liveness', 'Measure of how likely the song is to be preformed live', 5),
+                            genSlider(
+                                'assets/images/guitar.PNG',
+                                'Acousticness',
+                                'The Likelyhood that a song is acoustic',
+                                3),
                             Spacer(flex: 1),
-                            genSlider('assets/images/speech-bubble.PNG','Speechiness', 'Amount of the song that is voice vs instruments', 7),
+                            genSlider(
+                                'assets/images/disco-ball.PNG',
+                                'Danceability',
+                                'Measure of how danceable the song is',
+                                2),
                             Spacer(flex: 1),
-                            genSlider('assets/images/happiness.PNG','Valence', 'Measure of emotion in the song', 8),
+                            genSlider(
+                                'assets/images/volume-up-interface-symbol.PNG',
+                                "Loudness",
+                                'Average decible value of the song',
+                                6),
+                            Spacer(flex: 1),
+                          ]),
+                        ),
+                        Spacer(flex: 1),
+                        Flexible(
+                          flex: 5,
+                          child: Row(children: [
+                            Spacer(flex: 1),
+                            genSlider(
+                                'assets/images/stage.PNG',
+                                'Liveness',
+                                'Measure of how likely the song is to be preformed live',
+                                5),
+                            Spacer(flex: 1),
+                            genSlider(
+                                'assets/images/speech-bubble.PNG',
+                                'Speechiness',
+                                'Amount of the song that is voice vs instruments',
+                                7),
+                            Spacer(flex: 1),
+                            genSlider('assets/images/happiness.PNG', 'Valence',
+                                'Measure of emotion in the song', 8),
                             Spacer(flex: 1),
                           ]),
                         ),
                         Spacer(flex: 1),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(bottom: 20),
-                              alignment: Alignment.bottomCenter,
-                              child: Tooltip(
-                                // Tooltip message
-                                message: 'Return to playlist selection',
-                                // Time before tooltip is displayed
-                                waitDuration: Duration(seconds: 1),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(25),
-                                  // Tooltip wrapped over Text button
-                                  child: TextButton(
-                                    // Sets the text to the main font and gives padding + color
-                                    style: TextButton.styleFrom(
-                                      backgroundColor:
-                                          //Color.fromRGBO(200, 25, 64, 1.0),
-                                          Color.fromRGBO(25, 20, 20, 1.0),
-                                      padding: const EdgeInsets.all(15.0),
-                                      primary: Colors.black,
-                                    ),
-                                    // Sets the icon Label to log in text
-                                    child: Text(
-                                      'Back',
-                                      style: TextStyle(
-                                        fontFamily: "Spotify",
-                                        fontWeight: FontWeight.bold,
-                                        color: Color.fromRGBO(125, 120, 120, 1.0),
-                                        fontSize: 15,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                padding: EdgeInsets.only(bottom: 20),
+                                alignment: Alignment.bottomCenter,
+                                child: Tooltip(
+                                  // Tooltip message
+                                  message: 'Return to playlist selection',
+                                  // Time before tooltip is displayed
+                                  waitDuration: Duration(seconds: 1),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(25),
+                                    // Tooltip wrapped over Text button
+                                    child: TextButton(
+                                      // Sets the text to the main font and gives padding + color
+                                      style: TextButton.styleFrom(
+                                        backgroundColor:
+                                            //Color.fromRGBO(200, 25, 64, 1.0),
+                                            Color.fromRGBO(25, 20, 20, 1.0),
+                                        padding: const EdgeInsets.all(15.0),
+                                        primary: Colors.black,
                                       ),
+                                      // Sets the icon Label to log in text
+                                      child: Text(
+                                        'Back',
+                                        style: TextStyle(
+                                          fontFamily: "Spotify",
+                                          fontWeight: FontWeight.bold,
+                                          color: Color.fromRGBO(
+                                              125, 120, 120, 1.0),
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      // When pressed, decrement the selection
+                                      onPressed: () {
+                                        decrementSelected();
+                                      },
                                     ),
-                                    // When pressed, decrement the selection
-                                    onPressed: () {
-                                      decrementSelected();
-                                    },
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(width: 10,),
-                            Container(
-                              padding: EdgeInsets.only(bottom: 20),
-                              alignment: Alignment.bottomCenter,
-                              child: Tooltip(
-                                // Tooltip message
-                                message: 'Sort the playlist based on these parameters',
-                                // Time before tooltip is displayed
-                                waitDuration: Duration(seconds: 1),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.circular(25),
-                                  // Tooltip wrapped over Text button
-                                  child: TextButton(
-                                    // Sets the text to the main font and gives padding + color
-                                    style: TextButton.styleFrom(
-                                      backgroundColor:
-                                          Color.fromRGBO(29, 185, 84, 1.0),
-                                      padding: const EdgeInsets.all(15.0),
-                                      primary: Colors.black,
-                                    ),
-                                    // Sets the icon Label to log in text
-                                    child: Text(
-                                      'Sort Playlist',
-                                      style: TextStyle(
-                                        fontFamily: "Spotify",
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                        fontSize: 15,
+                              SizedBox(
+                                width: 10,
+                              ),
+                              Container(
+                                padding: EdgeInsets.only(bottom: 20),
+                                alignment: Alignment.bottomCenter,
+                                child: Tooltip(
+                                  // Tooltip message
+                                  message:
+                                      'Sort the playlist based on these parameters',
+                                  // Time before tooltip is displayed
+                                  waitDuration: Duration(seconds: 1),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(25),
+                                    // Tooltip wrapped over Text button
+                                    child: TextButton(
+                                      // Sets the text to the main font and gives padding + color
+                                      style: TextButton.styleFrom(
+                                        backgroundColor:
+                                            Color.fromRGBO(29, 185, 84, 1.0),
+                                        padding: const EdgeInsets.all(15.0),
+                                        primary: Colors.black,
                                       ),
+                                      // Sets the icon Label to log in text
+                                      child: Text(
+                                        'Sort Playlist',
+                                        style: TextStyle(
+                                          fontFamily: "Spotify",
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.black,
+                                          fontSize: 15,
+                                        ),
+                                      ),
+                                      // When pressed, increment the selection
+                                      onPressed: () {
+                                        incrementSelected();
+                                      },
                                     ),
-                                    // When pressed, increment the selection
-                                    onPressed: () {
-                                      incrementSelected();
-                                    },
                                   ),
                                 ),
                               ),
-                            ),
-                        ]),
+                            ]),
                         Spacer(flex: 1),
                       ]),
                     ),
@@ -841,11 +903,11 @@ class _DesktopLanding extends State<DesktopLanding> {
             key: ValueKey<int>(selected));
         break;
       case 3:
-        child = Stack(
-          children: [Column(
-              children: [
-                Spacer(flex: 1),
-                Flexible(
+        child = Stack(children: [
+          Column(
+            children: [
+              Spacer(flex: 1),
+              Flexible(
                   flex: 30,
                   child: Row(
                     children: [
@@ -858,364 +920,357 @@ class _DesktopLanding extends State<DesktopLanding> {
                       Flexible(
                         flex: 80,
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                          Flexible(
-                            child: Text(
-                              selectedPlaylist,
-                              //overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                letterSpacing: -1,
-                                fontFamily: "SpotifyBlack",
-                                //fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontSize: 90,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Flexible(
+                                child: Text(
+                                  selectedPlaylist,
+                                  //overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    letterSpacing: -1,
+                                    fontFamily: "SpotifyBlack",
+                                    //fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                    fontSize: 90,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          Flexible(
-                            child: Text(
-                              '  By: ' + userName,
-                              //overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                letterSpacing: 0,
-                                fontFamily: "Spotify",
-                                //fontWeight: FontWeight.bold,
-                                color: Color.fromRGBO(175, 170, 170, 1.0),
-                                fontSize: 17,
+                              Flexible(
+                                child: Text(
+                                  '  By: ' + userName,
+                                  //overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    letterSpacing: 0,
+                                    fontFamily: "Spotify",
+                                    //fontWeight: FontWeight.bold,
+                                    color: Color.fromRGBO(175, 170, 170, 1.0),
+                                    fontSize: 17,
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ]),
+                            ]),
                       ),
                     ],
-                  )
-                ),
-                Flexible(
-                  flex: 90,
-                  child: Container(
-                    padding: EdgeInsets.all(10),
-                    child: FutureBuilder(
+                  )),
+              Flexible(
+                flex: 90,
+                child: Container(
+                  padding: EdgeInsets.all(10),
+                  child: FutureBuilder(
                       future: trackGetter(),
-                      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                      if(snapshot.connectionState == ConnectionState.done){
-                        return ListView.builder(
-                          itemCount: trackNames.length,
-                          itemBuilder: (context, position) {
-                            return Container(
-                              height: 74,
-                              color: Color.fromRGBO(45, 40, 40, 1.0),
-                              child: Row(
-                                children: [
+                      builder: (BuildContext context,
+                          AsyncSnapshot<dynamic> snapshot) {
+                        if (snapshot.connectionState == ConnectionState.done) {
+                          return ListView.builder(
+                            itemCount: trackNames.length,
+                            itemBuilder: (context, position) {
+                              return Container(
+                                height: 74,
+                                color: Color.fromRGBO(45, 40, 40, 1.0),
+                                child: Row(children: [
                                   Spacer(flex: 1),
                                   Flexible(
                                     flex: 40,
-                                    child: Container( 
+                                    child: Container(
                                       width: 30,
                                       child: Text(
-                                        (position+1).toString(), 
+                                        (position + 1).toString(),
                                         textAlign: TextAlign.end,
                                         style: TextStyle(
-                                          fontFamily: "Spotify",
-                                          color: Colors.white, 
-                                          fontSize: 17.0
-                                          ),
-                                        ),
+                                            fontFamily: "Spotify",
+                                            color: Colors.white,
+                                            fontSize: 17.0),
+                                      ),
                                     ),
                                   ),
-                                  SizedBox(width: 30,),
-                                  Flexible(
-                                    flex: 40,
-                                    child: Image.network(trackPicture[position])
+                                  SizedBox(
+                                    width: 30,
                                   ),
+                                  Flexible(
+                                      flex: 40,
+                                      child: Image.network(
+                                          trackPicture[position])),
                                   Spacer(flex: 2),
                                   Flexible(
-                                    flex: 80,
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
+                                      flex: 80,
+                                      child: Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
                                           Text(
                                             trackNames[position].toString(),
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              fontFamily: "Spotify",
-                                              color: Colors.white, 
-                                              fontSize: 17.0
-                                              ),
+                                                fontFamily: "Spotify",
+                                                color: Colors.white,
+                                                fontSize: 17.0),
                                           ),
                                           Text(
-                                            trackArtists[position][1].toString(),
+                                            trackArtists[position][1]
+                                                .toString(),
                                             overflow: TextOverflow.ellipsis,
                                             style: TextStyle(
-                                              fontFamily: "Spotify",
-                                              color: Color.fromRGBO(125, 120, 120, 1.0), 
-                                              fontSize: 13.0
-                                              ),
+                                                fontFamily: "Spotify",
+                                                color: Color.fromRGBO(
+                                                    125, 120, 120, 1.0),
+                                                fontSize: 13.0),
                                           ),
                                         ],
-                                      )
-                                  ),
-                                ]
-                              ),
-                            );
-                          },
-                        );
-                      }
-                      else
-                      {
-                        return Text(
-                          'Loading Playlist...', 
-                          textAlign: TextAlign.end,
-                          style: TextStyle(
-                            fontFamily: "Spotify",
-                            color: Colors.white, 
-                            fontSize: 17.0
-                            ),
+                                      )),
+                                ]),
+                              );
+                            },
                           );
-                      }
-                      }
+                        } else {
+                          return Text(
+                            'Loading Playlist...',
+                            textAlign: TextAlign.end,
+                            style: TextStyle(
+                                fontFamily: "Spotify",
+                                color: Colors.white,
+                                fontSize: 17.0),
+                          );
+                        }
+                      }),
+                ),
+              ),
+            ],
+          ),
+          Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Container(
+              padding: EdgeInsets.only(bottom: 20),
+              alignment: Alignment.bottomCenter,
+              child: Tooltip(
+                // Tooltip message
+                message: 'Return to parameter ajustment',
+                // Time before tooltip is displayed
+                waitDuration: Duration(seconds: 1),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  // Tooltip wrapped over Text button
+                  child: TextButton(
+                    // Sets the text to the main font and gives padding + color
+                    style: TextButton.styleFrom(
+                      backgroundColor:
+                          //Color.fromRGBO(200, 25, 64, 1.0),
+                          Color.fromRGBO(25, 20, 20, 1.0),
+                      padding: const EdgeInsets.all(15.0),
+                      primary: Colors.black,
                     ),
+                    // Sets the icon Label to log in text
+                    child: Text(
+                      'Back',
+                      style: TextStyle(
+                        fontFamily: "Spotify",
+                        fontWeight: FontWeight.bold,
+                        color: Color.fromRGBO(125, 120, 120, 1.0),
+                        fontSize: 15,
+                      ),
+                    ),
+                    // When pressed, decrement the selection
+                    onPressed: () {
+                      decrementSelected();
+                      trackArtists.clear();
+                      trackNames.clear();
+                      trackPicture.clear();
+                      trackId.clear();
+                    },
                   ),
                 ),
-              ],
+              ),
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(bottom: 20),
-                  alignment: Alignment.bottomCenter,
-                  child: Tooltip(
-                    // Tooltip message
-                    message: 'Return to parameter ajustment',
-                    // Time before tooltip is displayed
-                    waitDuration: Duration(seconds: 1),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(25),
-                      // Tooltip wrapped over Text button
-                      child: TextButton(
-                        // Sets the text to the main font and gives padding + color
-                        style: TextButton.styleFrom(
-                          backgroundColor:
-                              //Color.fromRGBO(200, 25, 64, 1.0),
-                              Color.fromRGBO(25, 20, 20, 1.0),
-                          padding: const EdgeInsets.all(15.0),
-                          primary: Colors.black,
-                        ),
-                        // Sets the icon Label to log in text
-                        child: Text(
-                          'Back',
-                          style: TextStyle(
-                            fontFamily: "Spotify",
-                            fontWeight: FontWeight.bold,
-                            color: Color.fromRGBO(125, 120, 120, 1.0),
-                            fontSize: 15,
-                          ),
-                        ),
-                        // When pressed, decrement the selection
-                        onPressed: () {
-                          decrementSelected();
-                          trackArtists.clear();
-                          trackNames.clear();
-                          trackPicture.clear();
-                          trackId.clear();
-                        },
+            SizedBox(
+              width: 10,
+            ),
+            Container(
+              padding: EdgeInsets.only(bottom: 20),
+              alignment: Alignment.bottomCenter,
+              child: Tooltip(
+                // Tooltip message
+                message: 'Save Playlist to your account',
+                // Time before tooltip is displayed
+                waitDuration: Duration(seconds: 1),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(25),
+                  // Tooltip wrapped over Text button
+                  child: TextButton(
+                    // Sets the text to the main font and gives padding + color
+                    style: TextButton.styleFrom(
+                      backgroundColor: Color.fromRGBO(29, 185, 84, 1.0),
+                      padding: const EdgeInsets.all(15.0),
+                      primary: Colors.black,
+                    ),
+                    // Sets the icon Label to log in text
+                    child: Text(
+                      'Save Playlist',
+                      style: TextStyle(
+                        fontFamily: "Spotify",
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 15,
                       ),
                     ),
+                    // When pressed, increment the selection
+                    onPressed: () {
+                      // Save the Playlist, Create some kind of response
+                      //***************** Placeholder for API CAll to save */
+                      /////////////////////////////////////////////////////
+                      savePlaylist();
+                      incrementSelected();
+                    },
                   ),
                 ),
-                SizedBox(width: 10,),
-                Container(
-                  padding: EdgeInsets.only(bottom: 20),
-                  alignment: Alignment.bottomCenter,
-                  child: Tooltip(
-                    // Tooltip message
-                    message: 'Save Playlist to your account',
-                    // Time before tooltip is displayed
-                    waitDuration: Duration(seconds: 1),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(25),
-                      // Tooltip wrapped over Text button
-                      child: TextButton(
-                        // Sets the text to the main font and gives padding + color
-                        style: TextButton.styleFrom(
-                          backgroundColor:
-                              Color.fromRGBO(29, 185, 84, 1.0),
-                          padding: const EdgeInsets.all(15.0),
-                          primary: Colors.black,
-                        ),
-                        // Sets the icon Label to log in text
-                        child: Text(
-                          'Save Playlist',
-                          style: TextStyle(
-                            fontFamily: "Spotify",
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                            fontSize: 15,
-                          ),
-                        ),
-                        // When pressed, increment the selection
-                        onPressed: () {
-                          // Save the Playlist, Create some kind of response
-                          //***************** Placeholder for API CAll to save */
-                          /////////////////////////////////////////////////////
-                          savePlaylist();
-                          incrementSelected();
-                        },
-                      ),
-                    ),
-                  ),
-                ),
-            ]),
-          ]
-        );
+              ),
+            ),
+          ]),
+        ]);
         break;
-      case 4: 
+      case 4:
         child = Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Spacer(flex: 1),
-                Flexible(
-                  flex: 50,
-                  child: Row(
-                    children: [
-                      Spacer(flex: 2),
-                      Flexible(
-                        flex: 30,
-                        child: Image.network(selectedPlaylistPic),
-                      ),
-                      Spacer(flex: 2),
-                      Flexible(
-                        flex: 80,
-                        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Spacer(flex: 1),
+            Flexible(
+                flex: 50,
+                child: Row(
+                  children: [
+                    Spacer(flex: 2),
+                    Flexible(
+                      flex: 30,
+                      child: Image.network(selectedPlaylistPic),
+                    ),
+                    Spacer(flex: 2),
+                    Flexible(
+                      flex: 80,
+                      child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                          Flexible(
-                            child: Text(
-                              selectedPlaylist,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                letterSpacing: -1,
-                                fontFamily: "SpotifyBlack",
-                                //fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                                fontSize: 50,
+                            Flexible(
+                              child: Text(
+                                selectedPlaylist,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  letterSpacing: -1,
+                                  fontFamily: "SpotifyBlack",
+                                  //fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                  fontSize: 50,
+                                ),
                               ),
                             ),
-                          ),
-                          Flexible(
+                            Flexible(
+                              child: Text(
+                                '  By: ' + userName,
+                                //overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  letterSpacing: 0,
+                                  fontFamily: "Spotify",
+                                  //fontWeight: FontWeight.bold,
+                                  color: Color.fromRGBO(175, 170, 170, 1.0),
+                                  fontSize: 17,
+                                ),
+                              ),
+                            ),
+                          ]),
+                    ),
+                  ],
+                )),
+            Flexible(
+              flex: 20,
+              child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(bottom: 20),
+                      alignment: Alignment.bottomCenter,
+                      child: Tooltip(
+                        // Tooltip message
+                        message: 'Click to open playlist in browser',
+                        // Time before tooltip is displayed
+                        waitDuration: Duration(seconds: 1),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          // Tooltip wrapped over Text button
+                          child: TextButton(
+                            // Sets the text to the main font and gives padding + color
+                            style: TextButton.styleFrom(
+                              backgroundColor: Color.fromRGBO(25, 20, 20, 1.0),
+                              padding: const EdgeInsets.all(15.0),
+                              primary: Colors.black,
+                            ),
+                            // Sets the icon Label to log in text
                             child: Text(
-                              '  By: ' + userName,
-                              //overflow: TextOverflow.ellipsis,
+                              'Open Playlist',
                               style: TextStyle(
-                                letterSpacing: 0,
                                 fontFamily: "Spotify",
-                                //fontWeight: FontWeight.bold,
-                                color: Color.fromRGBO(175, 170, 170, 1.0),
-                                fontSize: 17,
+                                fontWeight: FontWeight.bold,
+                                color: Color.fromRGBO(125, 120, 120, 1.0),
+                                fontSize: 15,
                               ),
                             ),
-                          ),
-                        ]),
-                      ),
-                    ],
-                  )
-                ),
-                Flexible(
-                  flex: 20,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(bottom: 20),
-                        alignment: Alignment.bottomCenter,
-                        child: Tooltip(
-                          // Tooltip message
-                          message: 'Click to open playlist in browser',
-                          // Time before tooltip is displayed
-                          waitDuration: Duration(seconds: 1),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(25),
-                            // Tooltip wrapped over Text button
-                            child: TextButton(
-                              // Sets the text to the main font and gives padding + color
-                              style: TextButton.styleFrom(
-                                backgroundColor:
-                                    Color.fromRGBO(25, 20, 20, 1.0),
-                                padding: const EdgeInsets.all(15.0),
-                                primary: Colors.black,
-                              ),
-                              // Sets the icon Label to log in text
-                              child: Text(
-                                'Open Playlist',
-                                style: TextStyle(
-                                  fontFamily: "Spotify",
-                                  fontWeight: FontWeight.bold,
-                                  color: Color.fromRGBO(125, 120, 120, 1.0),
-                                  fontSize: 15,
-                                ),
-                              ),
-                              // When pressed, increment the selection
-                              onPressed: () {
-                                // open link to playlist: js.context.callMethod('open', ['link to playlist']);
-                                js.context.callMethod('open', [createdPlaylistLink]);
-                              },
-                            ),
+                            // When pressed, increment the selection
+                            onPressed: () {
+                              // open link to playlist: js.context.callMethod('open', ['link to playlist']);
+                              js.context
+                                  .callMethod('open', [createdPlaylistLink]);
+                            },
                           ),
                         ),
                       ),
-                      SizedBox(width: 10,),
-                      Container(
-                        padding: EdgeInsets.only(bottom: 20),
-                        alignment: Alignment.bottomCenter,
-                        child: Tooltip(
-                          // Tooltip message
-                          message: 'Return to Playlist Selector',
-                          // Time before tooltip is displayed
-                          waitDuration: Duration(seconds: 1),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(25),
-                            // Tooltip wrapped over Text button
-                            child: TextButton(
-                              // Sets the text to the main font and gives padding + color
-                              style: TextButton.styleFrom(
-                                backgroundColor:
-                                    Color.fromRGBO(29, 185, 84, 1.0),
-                                padding: const EdgeInsets.all(15.0),
-                                primary: Colors.black,
-                              ),
-                              // Sets the icon Label to log in text
-                              child: Text(
-                                'Home',
-                                style: TextStyle(
-                                  fontFamily: "Spotify",
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              // When pressed, increment the selection
-                              onPressed: () {
-                                incrementSelected();
-                                trackArtists.clear();
-                                trackNames.clear();
-                                trackPicture.clear();
-                                trackId.clear();
-                              },
+                    ),
+                    SizedBox(
+                      width: 10,
+                    ),
+                    Container(
+                      padding: EdgeInsets.only(bottom: 20),
+                      alignment: Alignment.bottomCenter,
+                      child: Tooltip(
+                        // Tooltip message
+                        message: 'Return to Playlist Selector',
+                        // Time before tooltip is displayed
+                        waitDuration: Duration(seconds: 1),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(25),
+                          // Tooltip wrapped over Text button
+                          child: TextButton(
+                            // Sets the text to the main font and gives padding + color
+                            style: TextButton.styleFrom(
+                              backgroundColor: Color.fromRGBO(29, 185, 84, 1.0),
+                              padding: const EdgeInsets.all(15.0),
+                              primary: Colors.black,
                             ),
+                            // Sets the icon Label to log in text
+                            child: Text(
+                              'Home',
+                              style: TextStyle(
+                                fontFamily: "Spotify",
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 15,
+                              ),
+                            ),
+                            // When pressed, increment the selection
+                            onPressed: () {
+                              incrementSelected();
+                              trackArtists.clear();
+                              trackNames.clear();
+                              trackPicture.clear();
+                              trackId.clear();
+                            },
                           ),
                         ),
                       ),
-                    ]
-                  ),
-                ),
-              ],
-            );
-          
+                    ),
+                  ]),
+            ),
+          ],
+        );
+
         break;
     }
     // Returns the Widget
@@ -1266,10 +1321,11 @@ class _DesktopLanding extends State<DesktopLanding> {
         height = 90;
         break;
       case 1: // Select Playlist
-        height = maxHeight*0.95;
+        height = maxHeight * 0.95;
         break;
       case 2: // Selecting Parameters
-        height = (maxHeight) * 0.9; // 233 is the number of pixels left, Idk how to make it dynamic LUL
+        height = (maxHeight) *
+            0.9; // 233 is the number of pixels left, Idk how to make it dynamic LUL
         break;
       case 3: // Viewing Sorted Playlist
         height = (maxHeight) * 0.9;
@@ -1280,10 +1336,8 @@ class _DesktopLanding extends State<DesktopLanding> {
     return height;
   }
 
-  Color colorSelector(int sel)
-  {
-    if(selected == 0)
-    {
+  Color colorSelector(int sel) {
+    if (selected == 0) {
       return Color.fromRGBO(29, 185, 84, 1.0);
     }
     return Color.fromRGBO(25, 20, 20, 1.0);
@@ -1346,7 +1400,8 @@ class _DesktopLanding extends State<DesktopLanding> {
           // Decoration of the animated container
           decoration: BoxDecoration(
             // Sets to spotify green
-            color: colorSelector(selected), ////////////////////////////////////////////
+            color: colorSelector(
+                selected), ////////////////////////////////////////////
             // Sets rounded corners
             borderRadius: BorderRadius.all(Radius.circular(10)),
             // Creates box shadow
@@ -1378,4 +1433,3 @@ class MobileLanding extends StatelessWidget {
     return Container();
   }
 }
-
