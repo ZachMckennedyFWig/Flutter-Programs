@@ -388,7 +388,7 @@ class _DesktopLanding extends State<DesktopLanding> {
     // Variables for layout items:
 
     // Amount of Playlists to be shown per row, Dynamic based on the width of the container it is wrapped in
-    int axisCount = (widthSelector(maxWidth) * 0.8) ~/ 150;
+    int axisCount = (widthSelector(maxWidth) * 0.8) ~/ 150 > 1 ? (widthSelector(maxWidth) * 0.8) ~/ 150 : 2;
     // Amount of Horizontal space between each of the playlist boxes
     double crossSpace = 15;
     // Amount of Vertical space between each of the playlist boxes
