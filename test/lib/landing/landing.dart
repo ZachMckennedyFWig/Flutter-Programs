@@ -400,52 +400,44 @@ class _DesktopLanding extends State<DesktopLanding> {
     switch (selected) {
       // Sign in Button
       case 0:
-        // Wrapped in container to take the parents size
-        child = Container(
-              // Wrapped in tooltip to tell the user what they are hovering over
-              child: Tooltip(
-                // Tooltip message
-                message: 'Link your Spotify Account',
-                // Time before tooltip is displayed
-                waitDuration: Duration(seconds: 1),
-                // Tooltip wrapped over Text button
-                child: Flexible(
-                    child: TextButton.icon(
-                    // Sets the text to the main font and gives padding + color
-                    style: TextButton.styleFrom(
-                      padding: const EdgeInsets.all(5.0),
-                      primary: Colors.black,
-                    ),
-                    // Creates icon from SVG
-                    icon: SvgPicture.asset(
+        child = Flexible(
+          child: Tooltip(
+            // Tooltip message
+            message: 'Link your Spotify Account',
+            // Time before tooltip is displayed
+            waitDuration: Duration(seconds: 1),
+            child: GestureDetector(
+              onTap: (){logIn();},
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Flexible(
+                    flex: 10,
+                    child: SvgPicture.asset(
                       'assets/images/spotify-logo.svg',
-                      height:
-                          40, // These can be static because this button doesn't scale
-                      width: 40,
                       color: Colors.black,
                     ),
-                    // Sets the icon Label to log in text
-                    label: Text(
+                  ),
+                  Spacer(flex: 2),
+                  Flexible(
+                    flex: 30,
+                    child: Text(
                       'Log In',
                       style: TextStyle(
                         fontFamily: "Spotify",
+                        fontSize: 30,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
-                        fontSize: 30,
                       ),
                     ),
-                    // When pressed, increment the selection
-                    onPressed: () {
-                      //incrementSelected();
-                      logIn();
-                      // This is also where Oauth2 will go
-                    },
-                  ),
-                ),
-              ),
-              // Sets the key to the iteration value so the animator knows that this is a different container from the previous
-              key: ValueKey<int>(selected)
-            );
+                  ), 
+                  Spacer(flex: 5), 
+              ]),
+            )
+          ),
+          key: ValueKey<int>(selected)
+        );
         // Creates the Colors for the playlist backgrounds. This has to be here because
         // when rescaling the page it reruns the color selector. By having it here they don't
         // change as the page is scaled. This is a strange bug.
