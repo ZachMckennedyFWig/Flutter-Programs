@@ -1932,7 +1932,7 @@ class _DesktopLanding extends State<DesktopLanding> {
       // Sets 'width' to the correct size based on its current state. These are Dyanmic based on screen size
       switch (selected) {
         case 0: // Log In Button
-          width = 250;
+          width = maxWidth * 0.4;
           break;
         case 1: // Select Playlist
           width = maxWidth * 0.9;
@@ -1986,7 +1986,7 @@ class _DesktopLanding extends State<DesktopLanding> {
       // Sets 'height' to the correct size based on its current state. These are Dyanmic based on screen size
       switch (selected) {
         case 0: // Log In Button
-          height = 90;
+          height = maxHeight * 0.1;
           break;
         case 1: // Select Playlist
           height = maxHeight * 0.9;
