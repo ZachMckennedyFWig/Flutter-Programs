@@ -401,8 +401,7 @@ class _DesktopLanding extends State<DesktopLanding> {
       // Sign in Button
       case 0:
         // Wrapped in container to take the parents size
-        child = Flexible(
-            child: Container(
+        child = Container(
               // Wrapped in tooltip to tell the user what they are hovering over
               child: Tooltip(
                 // Tooltip message
@@ -444,8 +443,7 @@ class _DesktopLanding extends State<DesktopLanding> {
               ),
               // Sets the key to the iteration value so the animator knows that this is a different container from the previous
               key: ValueKey<int>(selected)
-            )
-          );
+            );
         // Creates the Colors for the playlist backgrounds. This has to be here because
         // when rescaling the page it reruns the color selector. By having it here they don't
         // change as the page is scaled. This is a strange bug.
