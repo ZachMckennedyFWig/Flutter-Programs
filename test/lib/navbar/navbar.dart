@@ -2,17 +2,20 @@
 
 import 'package:flutter/material.dart';
 
+bool desktop = true;
+
 class navbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints){
         if(constraints.maxWidth > 1200){
-          return DesktopNavbar();
+          desktop = true;
         }
         else{
-          return MobileNavbar();
+          desktop = false;
         }
+        return DesktopNavbar();
       },
     );
   }
@@ -22,32 +25,64 @@ class navbar extends StatelessWidget {
 class DesktopNavbar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      //padding: const EdgeInsets.all(20),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children:[
-          Spacer(flex: 1),
-          Flexible(
-            flex: 45,
-            child:
-            FittedBox(
-              fit: BoxFit.fitWidth,
-              child: Text(
-                "Sortify", 
-                style: TextStyle(
-                  fontFamily: "Spotify",
-                  fontWeight: FontWeight.bold, 
-                  color: Colors.white, 
-                  fontSize: 100, 
-                  letterSpacing: 0),
+    if(desktop)
+    {
+      return Container(
+        //padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:[
+            Spacer(flex: 1),
+            Flexible(
+              flex: 45,
+              child:
+              FittedBox(
+                fit: BoxFit.fitWidth,
+                child: Text(
+                  "Sortify", 
+                  style: TextStyle(
+                    fontFamily: "SpotifyBold",
+                    fontWeight: FontWeight.bold, 
+                    color: Colors.white, 
+                    fontSize: 100, 
+                    letterSpacing: 0),
+                ),
               ),
             ),
-          ),
-          Spacer(flex: 1),
-        ],
-      ),
-    );
+            Spacer(flex: 1),
+          ],
+        ),
+      );
+    }
+    else
+    {
+      return Container(
+        //padding: const EdgeInsets.all(20),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:[
+            Spacer(flex: 1),
+            Flexible(
+              flex: 45,
+              child:
+              FittedBox(
+                fit: BoxFit.fitWidth,
+                child: Text(
+                  "Sortify", 
+                  style: TextStyle(
+                    fontFamily: "SpotifyBold",
+                    fontWeight: FontWeight.bold, 
+                    color: Colors.white, 
+                    fontSize: 70, 
+                    letterSpacing: 0),
+                ),
+              ),
+            ),
+            Spacer(flex: 1),
+          ],
+        ),
+      ); 
+    }
   }
 }
 
