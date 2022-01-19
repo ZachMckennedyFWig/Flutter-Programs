@@ -1,5 +1,5 @@
-name: test
-description: A new Flutter project.
+name: Sortify
+description: Ai based Spotify playlist sorter.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
