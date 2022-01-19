@@ -409,36 +409,38 @@ class _DesktopLanding extends State<DesktopLanding> {
                 // Time before tooltip is displayed
                 waitDuration: Duration(seconds: 1),
                 // Tooltip wrapped over Text button
-                child: TextButton.icon(
-                  // Sets the text to the main font and gives padding + color
-                  style: TextButton.styleFrom(
-                    padding: const EdgeInsets.all(5.0),
-                    primary: Colors.black,
-                  ),
-                  // Creates icon from SVG
-                  icon: SvgPicture.asset(
-                    'assets/images/spotify-logo.svg',
-                    height:
-                        40, // These can be static because this button doesn't scale
-                    width: 40,
-                    color: Colors.black,
-                  ),
-                  // Sets the icon Label to log in text
-                  label: Text(
-                    'Log In',
-                    style: TextStyle(
-                      fontFamily: "Spotify",
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 30,
+                child: Flexible(
+                    child: TextButton.icon(
+                    // Sets the text to the main font and gives padding + color
+                    style: TextButton.styleFrom(
+                      padding: const EdgeInsets.all(5.0),
+                      primary: Colors.black,
                     ),
+                    // Creates icon from SVG
+                    icon: SvgPicture.asset(
+                      'assets/images/spotify-logo.svg',
+                      height:
+                          40, // These can be static because this button doesn't scale
+                      width: 40,
+                      color: Colors.black,
+                    ),
+                    // Sets the icon Label to log in text
+                    label: Text(
+                      'Log In',
+                      style: TextStyle(
+                        fontFamily: "Spotify",
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 30,
+                      ),
+                    ),
+                    // When pressed, increment the selection
+                    onPressed: () {
+                      //incrementSelected();
+                      logIn();
+                      // This is also where Oauth2 will go
+                    },
                   ),
-                  // When pressed, increment the selection
-                  onPressed: () {
-                    //incrementSelected();
-                    logIn();
-                    // This is also where Oauth2 will go
-                  },
                 ),
               ),
               // Sets the key to the iteration value so the animator knows that this is a different container from the previous
