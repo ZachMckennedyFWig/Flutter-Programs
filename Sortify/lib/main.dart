@@ -42,30 +42,34 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/sortify-background-2.PNG'),
-            fit: BoxFit.cover,
-            //alignment: Alignment.,
+    return Title(
+      title: 'Sortify',
+      color: Colors.black,
+      child: Scaffold(
+        body: Container(
+          height: MediaQuery.of(context).size.height,
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('assets/images/sortify-background-2.PNG'),
+              fit: BoxFit.cover,
+              //alignment: Alignment.,
+            ),
           ),
-        ),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            alignment: Alignment.topCenter,
-            color: const Color.fromRGBO(15, 10, 10, 0.90),
-            child: Column(
-              children: <Widget>[
-                Flexible(
-                  flex: 7,
-                  child: navbar(),
-                ),
-                const Spacer(flex: 1),
-                Flexible(flex: 70, child: landing()),
-              ],
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+            child: Container(
+              alignment: Alignment.topCenter,
+              color: const Color.fromRGBO(15, 10, 10, 0.90),
+              child: Column(
+                children: <Widget>[
+                  Flexible(
+                    flex: 7,
+                    child: navbar(),
+                  ),
+                  const Spacer(flex: 1),
+                  Flexible(flex: 70, child: landing()),
+                ],
+              ),
             ),
           ),
         ),
