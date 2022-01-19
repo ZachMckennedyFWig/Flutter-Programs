@@ -401,48 +401,51 @@ class _DesktopLanding extends State<DesktopLanding> {
       // Sign in Button
       case 0:
         // Wrapped in container to take the parents size
-        child = Container(
-            // Wrapped in tooltip to tell the user what they are hovering over
-            child: Tooltip(
-              // Tooltip message
-              message: 'Link your Spotify Account',
-              // Time before tooltip is displayed
-              waitDuration: Duration(seconds: 1),
-              // Tooltip wrapped over Text button
-              child: TextButton.icon(
-                // Sets the text to the main font and gives padding + color
-                style: TextButton.styleFrom(
-                  padding: const EdgeInsets.all(35.0),
-                  primary: Colors.black,
-                ),
-                // Creates icon from SVG
-                icon: SvgPicture.asset(
-                  'assets/images/spotify-logo.svg',
-                  height:
-                      40, // These can be static because this button doesn't scale
-                  width: 40,
-                  color: Colors.black,
-                ),
-                // Sets the icon Label to log in text
-                label: Text(
-                  'Log In',
-                  style: TextStyle(
-                    fontFamily: "Spotify",
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 30,
+        child = Flexible(
+            child: Container(
+              // Wrapped in tooltip to tell the user what they are hovering over
+              child: Tooltip(
+                // Tooltip message
+                message: 'Link your Spotify Account',
+                // Time before tooltip is displayed
+                waitDuration: Duration(seconds: 1),
+                // Tooltip wrapped over Text button
+                child: TextButton.icon(
+                  // Sets the text to the main font and gives padding + color
+                  style: TextButton.styleFrom(
+                    padding: const EdgeInsets.all(5.0),
+                    primary: Colors.black,
                   ),
+                  // Creates icon from SVG
+                  icon: SvgPicture.asset(
+                    'assets/images/spotify-logo.svg',
+                    height:
+                        40, // These can be static because this button doesn't scale
+                    width: 40,
+                    color: Colors.black,
+                  ),
+                  // Sets the icon Label to log in text
+                  label: Text(
+                    'Log In',
+                    style: TextStyle(
+                      fontFamily: "Spotify",
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontSize: 30,
+                    ),
+                  ),
+                  // When pressed, increment the selection
+                  onPressed: () {
+                    //incrementSelected();
+                    logIn();
+                    // This is also where Oauth2 will go
+                  },
                 ),
-                // When pressed, increment the selection
-                onPressed: () {
-                  //incrementSelected();
-                  logIn();
-                  // This is also where Oauth2 will go
-                },
               ),
-            ),
-            // Sets the key to the iteration value so the animator knows that this is a different container from the previous
-            key: ValueKey<int>(selected));
+              // Sets the key to the iteration value so the animator knows that this is a different container from the previous
+              key: ValueKey<int>(selected)
+            )
+          );
         // Creates the Colors for the playlist backgrounds. This has to be here because
         // when rescaling the page it reruns the color selector. By having it here they don't
         // change as the page is scaled. This is a strange bug.
@@ -1937,7 +1940,7 @@ class _DesktopLanding extends State<DesktopLanding> {
       // Sets 'width' to the correct size based on its current state. These are Dyanmic based on screen size
       switch (selected) {
         case 0: // Log In Button
-          width = 200;
+          width = 250;
           break;
         case 1: // Select Playlist
           width = maxWidth * 0.9;
@@ -1997,10 +2000,10 @@ class _DesktopLanding extends State<DesktopLanding> {
           height = maxHeight * 0.9;
           break;
         case 2: // Selecting Parameters
-          height = (maxHeight) * 0.9; // 233 is the number of pixels left, Idk how to make it dynamic LUL
+          height = (maxHeight) * 0.97; // 233 is the number of pixels left, Idk how to make it dynamic LUL
           break;
         case 3: // Viewing Sorted Playlist
-          height = (maxHeight) * 0.9;
+          height = (maxHeight) * 0.97;
           break;
         case 4:
           height = (maxHeight) * 0.25;

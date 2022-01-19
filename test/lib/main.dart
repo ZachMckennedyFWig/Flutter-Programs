@@ -60,11 +60,11 @@ class MyHomePage extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 Flexible(
-                  flex: 5,
+                  flex: 7,
                   child: navbar(),
                 ),
                 const Spacer(flex: 1),
-                Flexible(flex: 25, child: landing()),
+                Flexible(flex: 70, child: landing()),
               ],
             ),
           ),
