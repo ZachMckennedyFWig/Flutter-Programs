@@ -400,7 +400,7 @@ class _DesktopLanding extends State<DesktopLanding> {
     switch (selected) {
       // Sign in Button
       case 0:
-        child = Flexible(
+        child = Container(
           child: Tooltip(
             // Tooltip message
             message: 'Link your Spotify Account',
