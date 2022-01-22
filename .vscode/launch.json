@@ -5,14 +5,14 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "test",
-            "cwd": "test",
+            "name": "Sortify",
+            "cwd": "Sortify",
             "request": "launch",
             "type": "dart"
         },
         {
-            "name": "test (profile mode)",
-            "cwd": "test",
+            "name": "Sortify (profile mode)",
+            "cwd": "Sortify",
             "request": "launch",
             "type": "dart",
             "flutterMode": "profile"
